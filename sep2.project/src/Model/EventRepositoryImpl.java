@@ -1,5 +1,9 @@
 package Model;
 
-public class EventRepositoryImpl
+public class EventRepositoryImpl extends EventRepository
 {
+  public EventRepositoryImpl()
+  {
+    super();
+  }
 }

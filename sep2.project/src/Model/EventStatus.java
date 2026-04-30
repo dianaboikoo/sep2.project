@@ -1,5 +1,8 @@
 package Model;
 
-public class EventStatus
+public enum EventStatus
 {
+  DRAFT,
+  PUBLISHED,
+  CANCELLED
 }
