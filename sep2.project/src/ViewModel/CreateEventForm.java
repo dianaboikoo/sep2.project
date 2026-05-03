@@ -4,26 +4,32 @@ public class CreateEventForm
 {
   private String name;
   private String description;
-  private String dateAndTime;
+  private String date;
+  private String time;
   private String location;
   private String ticketPrice;
-  private String capacity;
+  private String totalTickets;
+  private String imageURL;
 
-  public CreateEventForm(String name, String description, String dateAndTime,
-      String location, String ticketPrice, String capacity)
+  public CreateEventForm(String name, String description, String date, Sting Time,
+      String location, String ticketPrice, String totalTickets, Sting imageURL)
   {
     this.name = name;
     this.description = description;
-    this.dateAndTime = dateAndTime;
+    this.date = date;
+    this.time = time;
     this.location = location;
     this.ticketPrice = ticketPrice;
-    this.capacity = capacity;
+    this.totalTickets = totalTickets;
+    this.imageURL = imageURL;
   }
 
   public String getName() { return name; }
   public String getDescription() { return description; }
-  public String getDateAndTime() { return dateAndTime; }
+  public String getDate() { return date; }
+  public String getTime() { return time; }
   public String getLocation() { return location; }
   public String getTicketPrice() { return ticketPrice; }
-  public String getCapacity() { return capacity; }
+  public String getTotalTickets() { return totalTickets; }
+  public String getImageURL() { return iamgeURL; }
 }

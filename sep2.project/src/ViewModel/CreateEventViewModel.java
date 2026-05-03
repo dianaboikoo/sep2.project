@@ -2,6 +2,7 @@ package ViewModel;
 
 import Model.Event;
 import Model.EventRepository;
+import Model.EventStatus;
 
 public class CreateEventViewModel
 {
@@ -12,21 +13,29 @@ public class CreateEventViewModel
     this.repository = repository;
   }
 
-  public void createEvent(String name, String description, String date,
-      String time, String location, String ticketPrice,
-      String totalTickets, String imageURL)
+  public void createEvent(CreateEventForm form)
   {
     try
     {
-      double price = Double.parseDouble(ticketPrice);
-      int tickets = Integer.parseInt(totalTickets);
+      double price = Double.parseDouble(form.getTicketPrice());
+      int tickets = Integer.parseInt(form.getTotalTickets());
 
-      Event event = new Event(name, description, date, time,
-          location, price, tickets, imageURL);
+      Event event = new Event(
+          form.getName(),
+          form.getDescription(),
+          form.getDate(),
+          form.getTime(),
+          form.getLocation(),
+          price,
+          tickets,
+          tickets, //availableTickets defaults to totalTickets when creating
+          form.getImageURL(),
+          EventStatus.DRAFT
+      );
 
-      repository.addEvent(event);
+      repository.save(event);
 
-      System.out.println("Event created: " + name);
+      System.out.println("Event created: " + form.getName());
     }
     catch (Exception e)
     {

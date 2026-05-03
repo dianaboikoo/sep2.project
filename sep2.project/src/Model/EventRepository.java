@@ -1,23 +1,13 @@
 package Model;
+//implementing it as a normal class instead of interface breaks the dbs connection
+import java.util.List;
+import java.sql.SQLException;
 
-import java.util.ArrayList;
-
-public class EventRepository
+public interface EventRepository
 {
-  private ArrayList<Event> events;
-
-  public EventRepository()
-  {
-    events = new ArrayList<>();
-  }
-
-  public void addEvent(Event event)
-  {
-    events.add(event);
-  }
-
-  public ArrayList<Event> getEvents()
-  {
-    return new ArrayList<>(events);
-  }
+ Event save(Event event) throws SQLException;
+ Event findById(int id) throws SQLException;
+ List<Event> findAll() throws SQLException;
+ void delete(int id) throws SQLException;
+ boolean exists(int id) throws SQLException;
 }
