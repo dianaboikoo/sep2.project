@@ -16,9 +16,12 @@ public class Event
   private EventStatus status;
   private String imageURL;
 
-  public Event(String name, String description, LocalDateTime dateTime,
-      String venue, String address, double ticketPrice, int totalTickets, int ticketsSold, EventStatus status, String imageURL)
+  public Event(int eventId, String name, String description,
+      LocalDateTime dateTime, String venue, String address,
+      double ticketPrice, int totalTickets, int ticketsSold,
+      String imageURL, EventStatus status)
   {
+    this.eventId = eventId;
     this.name = name;
     this.description = description;
     this.dateTime = dateTime;
@@ -27,15 +30,32 @@ public class Event
     this.ticketPrice = ticketPrice;
     this.totalTickets = totalTickets;
     this.ticketsSold = ticketsSold;
-    this.status = EventStatus.DRAFT;
+    this.status = status;
     this.imageURL = imageURL;
   }
 
+  public boolean publish()
+  {
+    if (status == EventStatus.DRAFT)
+    {
+      status = EventStatus.PUBLISHED;
+      return true;
+    }
+    return false;
+  }
+
+  public int getAvailableTickets()
+  {
+    return totalTickets - ticketsSold;
+  }
+
+  // getters
+  public int getEventId() { return eventId; }
   public String getName() { return name; }
   public String getDescription() { return description; }
   public LocalDateTime getDateTime() { return dateTime; }
   public String getVenue() { return venue; }
-  public String getAddress() {return address;}
+  public String getAddress() { return address; }
   public double getTicketPrice() { return ticketPrice; }
   public int getTotalTickets() { return totalTickets; }
   public int getTicketsSold() { return ticketsSold; }

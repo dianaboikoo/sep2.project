@@ -38,18 +38,18 @@ public class EventRepositoryImpl implements EventRepository
   {
     try (Connection connection = getConnection())
     {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO events(name, description, date, time, location, "
-          + "ticket_price, total_tickets, available_tickets, image_url, status) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+      PreparedStatement statement = connection.prepareStatement("INSERT INTO events(name, description, date_time, venue, address, "
+          + "ticket_price, total_tickets, tickets_sold, status, imageurl) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
       statement.setString(1, event.getName());
       statement.setString(2, event.getDescription());
       statement.setTimestamp(3, java.sql.Timestamp.valueOf(event.getDateTime()));
-      statement.setString(5, event.getVenue());
-      statement.setString(6,event.getAddress());
-      statement.setDouble(7, event.getTicketPrice());
-      statement.setInt(8, event.getTotalTickets());
-      statement.setInt(9, event.getTicketsSold());
-      statement.setString(10, event.getImageURL());
-      statement.setString(11, event.getStatus().toString());
+      statement.setString(4, event.getVenue());
+      statement.setString(5,event.getAddress());
+      statement.setDouble(6, event.getTicketPrice());
+      statement.setInt(7, event.getTotalTickets());
+      statement.setInt(8, event.getTicketsSold());
+      statement.setString(9, event.getImageURL());
+      statement.setString(10, event.getStatus().toString());
       statement.executeUpdate(); //always need to execute/close at the end
       return event;
     }

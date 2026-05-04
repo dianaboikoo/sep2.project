@@ -4,5 +4,10 @@ public enum EventStatus
 {
   DRAFT,
   PUBLISHED,
-  CANCELLED
+  CANCELLED;
+
+  public boolean isActive()
+  {
+    return this == PUBLISHED;
+  }
 }

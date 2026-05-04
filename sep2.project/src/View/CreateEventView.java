@@ -26,16 +26,15 @@ public class CreateEventView
   @FXML
   private void onCreateEvent()
   {
-    viewModel.createEvent(
-        nameField.getText(),
-        descriptionField.getText(),
-        dateField.getText(),
-        timeField.getText(),
-        locationField.getText(),
-        ticketPriceField.getText(),
-        totalTicketsField.getText(),
-        imageURLField.getText()
-    );
+    viewModel.updateField("name", nameField.getText());
+    viewModel.updateField("description", descriptionField.getText());
+    viewModel.updateField("date", dateField.getText());
+    viewModel.updateField("time", timeField.getText());
+    viewModel.updateField("location", locationField.getText());
+    viewModel.updateField("ticketPrice", ticketPriceField.getText());
+    viewModel.updateField("totalTickets", totalTicketsField.getText());
+    viewModel.updateField("imageURL", imageURLField.getText());
+    viewModel.onCreateEvent();
 
     nameField.clear();
     descriptionField.clear();
