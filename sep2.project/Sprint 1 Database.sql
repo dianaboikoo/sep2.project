@@ -1,6 +1,7 @@
 --
 -- PostgreSQL database dump
 --
+set schema 'events';
 
 
 
@@ -36,9 +37,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE events.admin (
-    admin_id uuid NOT NULL,
-    name character varying(100),
-    email character varying(150),
+    email character varying(100) NOT NULL,
     password character varying(250)
 );
 
@@ -50,8 +49,7 @@ ALTER TABLE events.admin OWNER TO postgres;
 --
 
 CREATE TABLE events.category (
-    category_id uuid NOT NULL,
-    name character varying(100),
+    name character varying(100) NOT NULL,
     description text
 );
 
@@ -63,7 +61,7 @@ ALTER TABLE events.category OWNER TO postgres;
 --
 
 CREATE TABLE events.city (
-    city_id uuid NOT NULL,
+    zip_code numeric(4,0) NOT NULL,
     name character varying(100)
 );
 
@@ -75,10 +73,10 @@ ALTER TABLE events.city OWNER TO postgres;
 --
 
 CREATE TABLE events.events (
-    event_id uuid NOT NULL,
-    admin_id uuid NOT NULL,
-    category_id uuid NOT NULL,
-    city_id uuid NOT NULL,
+    event_id integer NOT NULL,
+    admin_email character varying(100) NOT NULL,
+    category_name character varying(100) NOT NULL,
+    zip_code numeric(4,0) NOT NULL,
     name character varying(150) NOT NULL,
     description text,
     date_time timestamp without time zone NOT NULL,
@@ -99,10 +97,39 @@ CREATE TABLE events.events (
 ALTER TABLE events.events OWNER TO postgres;
 
 --
+-- Name: events_event_id_seq; Type: SEQUENCE; Schema: events; Owner: postgres
+--
+
+CREATE SEQUENCE events.events_event_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE events.events_event_id_seq OWNER TO postgres;
+
+--
+-- Name: events_event_id_seq; Type: SEQUENCE OWNED BY; Schema: events; Owner: postgres
+--
+
+ALTER SEQUENCE events.events_event_id_seq OWNED BY events.events.event_id;
+
+
+--
+-- Name: events event_id; Type: DEFAULT; Schema: events; Owner: postgres
+--
+
+ALTER TABLE ONLY events.events ALTER COLUMN event_id SET DEFAULT nextval('events.events_event_id_seq'::regclass);
+
+
+--
 -- Data for Name: admin; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY events.admin (admin_id, name, email, password) FROM stdin;
+COPY events.admin (email, password) FROM stdin;
 \.
 
 
@@ -110,7 +137,7 @@ COPY events.admin (admin_id, name, email, password) FROM stdin;
 -- Data for Name: category; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY events.category (category_id, name, description) FROM stdin;
+COPY events.category (name, description) FROM stdin;
 \.
 
 
@@ -118,7 +145,7 @@ COPY events.category (category_id, name, description) FROM stdin;
 -- Data for Name: city; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY events.city (city_id, name) FROM stdin;
+COPY events.city (zip_code, name) FROM stdin;
 \.
 
 
@@ -126,8 +153,15 @@ COPY events.city (city_id, name) FROM stdin;
 -- Data for Name: events; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY events.events (event_id, admin_id, category_id, city_id, name, description, date_time, venue, address, ticket_price, total_tickets, tickets_sold, status, imageurl, created_at, updated_at) FROM stdin;
+COPY events.events (event_id, admin_email, category_name, zip_code, name, description, date_time, venue, address, ticket_price, total_tickets, tickets_sold, status, imageurl, created_at, updated_at) FROM stdin;
 \.
+
+
+--
+-- Name: events_event_id_seq; Type: SEQUENCE SET; Schema: events; Owner: postgres
+--
+
+SELECT pg_catalog.setval('events.events_event_id_seq', 1, false);
 
 
 --
@@ -135,7 +169,7 @@ COPY events.events (event_id, admin_id, category_id, city_id, name, description,
 --
 
 ALTER TABLE ONLY events.admin
-    ADD CONSTRAINT admin_pkey PRIMARY KEY (admin_id);
+    ADD CONSTRAINT admin_pkey PRIMARY KEY (email);
 
 
 --
@@ -143,7 +177,7 @@ ALTER TABLE ONLY events.admin
 --
 
 ALTER TABLE ONLY events.category
-    ADD CONSTRAINT category_pkey PRIMARY KEY (category_id);
+    ADD CONSTRAINT category_pkey PRIMARY KEY (name);
 
 
 --
@@ -151,7 +185,7 @@ ALTER TABLE ONLY events.category
 --
 
 ALTER TABLE ONLY events.city
-    ADD CONSTRAINT city_pkey PRIMARY KEY (city_id);
+    ADD CONSTRAINT city_pkey PRIMARY KEY (zip_code);
 
 
 --
@@ -170,27 +204,27 @@ CREATE UNIQUE INDEX idx_unique_event ON events.events USING btree (name, date_ti
 
 
 --
--- Name: events events_admin_id_fkey; Type: FK CONSTRAINT; Schema: events; Owner: postgres
+-- Name: events events_admin_email_fkey; Type: FK CONSTRAINT; Schema: events; Owner: postgres
 --
 
 ALTER TABLE ONLY events.events
-    ADD CONSTRAINT events_admin_id_fkey FOREIGN KEY (admin_id) REFERENCES events.admin(admin_id);
+    ADD CONSTRAINT events_admin_email_fkey FOREIGN KEY (admin_email) REFERENCES events.admin(email);
 
 
 --
--- Name: events events_category_id_fkey; Type: FK CONSTRAINT; Schema: events; Owner: postgres
---
-
-ALTER TABLE ONLY events.events
-    ADD CONSTRAINT events_category_id_fkey FOREIGN KEY (category_id) REFERENCES events.category(category_id);
-
-
---
--- Name: events events_city_id_fkey; Type: FK CONSTRAINT; Schema: events; Owner: postgres
+-- Name: events events_category_name_fkey; Type: FK CONSTRAINT; Schema: events; Owner: postgres
 --
 
 ALTER TABLE ONLY events.events
-    ADD CONSTRAINT events_city_id_fkey FOREIGN KEY (city_id) REFERENCES events.city(city_id);
+    ADD CONSTRAINT events_category_name_fkey FOREIGN KEY (category_name) REFERENCES events.category(name);
+
+
+--
+-- Name: events events_zip_code_fkey; Type: FK CONSTRAINT; Schema: events; Owner: postgres
+--
+
+ALTER TABLE ONLY events.events
+    ADD CONSTRAINT events_zip_code_fkey FOREIGN KEY (zip_code) REFERENCES events.city(zip_code);
 
 
 --
