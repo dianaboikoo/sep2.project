@@ -1,42 +1,44 @@
 package Model;
 
+import java.time.LocalDateTime;
+
 public class Event
 {
   private int eventId;
   private String name;
   private String description;
-  private String date;
-  private String time;
-  private String location;
+  private LocalDateTime dateTime;
+  private String venue;
+  private String address;
   private double ticketPrice;
   private int totalTickets;
-  private int availableTickets;
+  private int ticketsSold;
   private EventStatus status;
   private String imageURL;
 
-  public Event(String name, String description, String date, String time,
-      String location, double ticketPrice, int totalTickets, String imageURL)
+  public Event(String name, String description, LocalDateTime dateTime,
+      String venue, String address, double ticketPrice, int totalTickets, int ticketsSold, EventStatus status, String imageURL)
   {
     this.name = name;
     this.description = description;
-    this.date = date;
-    this.time = time;
-    this.location = location;
+    this.dateTime = dateTime;
+    this.venue = venue;
+    this.address = address;
     this.ticketPrice = ticketPrice;
     this.totalTickets = totalTickets;
-    this.availableTickets = totalTickets;
+    this.ticketsSold = ticketsSold;
     this.status = EventStatus.DRAFT;
     this.imageURL = imageURL;
   }
 
   public String getName() { return name; }
   public String getDescription() { return description; }
-  public String getDate() { return date; }
-  public String getTime() { return time; }
-  public String getLocation() { return location; }
+  public LocalDateTime getDateTime() { return dateTime; }
+  public String getVenue() { return venue; }
+  public String getAddress() {return address;}
   public double getTicketPrice() { return ticketPrice; }
   public int getTotalTickets() { return totalTickets; }
-  public int getAvailableTickets() { return availableTickets; }
+  public int getTicketsSold() { return ticketsSold; }
   public EventStatus getStatus() { return status; }
   public String getImageURL() { return imageURL; }
 }
