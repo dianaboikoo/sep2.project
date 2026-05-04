@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict rv7dp0bATNXvAFZ7ddB2E08EuCHfCwBTFOuZxUSWi76BB1vJrw9DdwYcVvJNiwM
+
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.3
@@ -197,5 +197,4 @@ ALTER TABLE ONLY events.events
 -- PostgreSQL database dump complete
 --
 
-\unrestrict rv7dp0bATNXvAFZ7ddB2E08EuCHfCwBTFOuZxUSWi76BB1vJrw9DdwYcVvJNiwM
 
