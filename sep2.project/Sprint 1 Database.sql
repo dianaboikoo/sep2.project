@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-
+\restrict KZHedXdftQmpHTnl9yHezbYcQmFxTypNKcWFWNtAH7fH5WmEgU9ZWOWws48Z2gG
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.3
@@ -47,17 +47,17 @@ CREATE TABLE events.admin (
 ALTER TABLE events.admin OWNER TO postgres;
 
 --
--- Name: categories; Type: TABLE; Schema: events; Owner: postgres
+-- Name: category; Type: TABLE; Schema: events; Owner: postgres
 --
 
-CREATE TABLE events.categories (
+CREATE TABLE events.category (
     category_id uuid NOT NULL,
     name character varying(100),
     description text
 );
 
 
-ALTER TABLE events.categories OWNER TO postgres;
+ALTER TABLE events.category OWNER TO postgres;
 
 --
 -- Name: city; Type: TABLE; Schema: events; Owner: postgres
@@ -83,12 +83,12 @@ CREATE TABLE events.events (
     name character varying(150) NOT NULL,
     description text,
     date_time timestamp without time zone NOT NULL,
-    venue character varying(255) NOT NULL,
+    location character varying(255) NOT NULL,
     ticket_price numeric(10,2) NOT NULL,
     total_tickets integer NOT NULL,
     tickets_sold integer DEFAULT 0,
     status character varying(20) DEFAULT 'DRAFT'::character varying,
-    banner_image_url character varying(500),
+    imageurl character varying(500),
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT events_ticket_price_check CHECK ((ticket_price >= (0)::numeric)),
@@ -107,10 +107,10 @@ COPY events.admin (admin_id, name, email, password) FROM stdin;
 
 
 --
--- Data for Name: categories; Type: TABLE DATA; Schema: events; Owner: postgres
+-- Data for Name: category; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY events.categories (category_id, name, description) FROM stdin;
+COPY events.category (category_id, name, description) FROM stdin;
 \.
 
 
@@ -126,7 +126,7 @@ COPY events.city (city_id, name) FROM stdin;
 -- Data for Name: events; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY events.events (event_id, admin_id, category_id, city_id, name, description, date_time, venue, ticket_price, total_tickets, tickets_sold, status, banner_image_url, created_at, updated_at) FROM stdin;
+COPY events.events (event_id, admin_id, category_id, city_id, name, description, date_time, location, ticket_price, total_tickets, tickets_sold, status, imageurl, created_at, updated_at) FROM stdin;
 \.
 
 
@@ -139,11 +139,11 @@ ALTER TABLE ONLY events.admin
 
 
 --
--- Name: categories categories_pkey; Type: CONSTRAINT; Schema: events; Owner: postgres
+-- Name: category category_pkey; Type: CONSTRAINT; Schema: events; Owner: postgres
 --
 
-ALTER TABLE ONLY events.categories
-    ADD CONSTRAINT categories_pkey PRIMARY KEY (category_id);
+ALTER TABLE ONLY events.category
+    ADD CONSTRAINT category_pkey PRIMARY KEY (category_id);
 
 
 --
@@ -166,7 +166,7 @@ ALTER TABLE ONLY events.events
 -- Name: idx_unique_event; Type: INDEX; Schema: events; Owner: postgres
 --
 
-CREATE UNIQUE INDEX idx_unique_event ON events.events USING btree (name, date_time, venue);
+CREATE UNIQUE INDEX idx_unique_event ON events.events USING btree (name, date_time, location);
 
 
 --
@@ -182,7 +182,7 @@ ALTER TABLE ONLY events.events
 --
 
 ALTER TABLE ONLY events.events
-    ADD CONSTRAINT events_category_id_fkey FOREIGN KEY (category_id) REFERENCES events.categories(category_id);
+    ADD CONSTRAINT events_category_id_fkey FOREIGN KEY (category_id) REFERENCES events.category(category_id);
 
 
 --
@@ -197,4 +197,5 @@ ALTER TABLE ONLY events.events
 -- PostgreSQL database dump complete
 --
 
+\unrestrict KZHedXdftQmpHTnl9yHezbYcQmFxTypNKcWFWNtAH7fH5WmEgU9ZWOWws48Z2gG
 
