@@ -3,6 +3,7 @@
 --
 
 
+
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.3
 
@@ -82,7 +83,8 @@ CREATE TABLE events.events (
     name character varying(150) NOT NULL,
     description text,
     date_time timestamp without time zone NOT NULL,
-    location character varying(255) NOT NULL,
+    venue character varying(255) NOT NULL,
+    address character varying(255) NOT NULL,
     ticket_price numeric(10,2) NOT NULL,
     total_tickets integer NOT NULL,
     tickets_sold integer DEFAULT 0,
@@ -125,7 +127,7 @@ COPY events.city (city_id, name) FROM stdin;
 -- Data for Name: events; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY events.events (event_id, admin_id, category_id, city_id, name, description, date_time, location, ticket_price, total_tickets, tickets_sold, status, imageurl, created_at, updated_at) FROM stdin;
+COPY events.events (event_id, admin_id, category_id, city_id, name, description, date_time, venue, address, ticket_price, total_tickets, tickets_sold, status, imageurl, created_at, updated_at) FROM stdin;
 \.
 
 
@@ -165,7 +167,7 @@ ALTER TABLE ONLY events.events
 -- Name: idx_unique_event; Type: INDEX; Schema: events; Owner: postgres
 --
 
-CREATE UNIQUE INDEX idx_unique_event ON events.events USING btree (name, date_time, location);
+CREATE UNIQUE INDEX idx_unique_event ON events.events USING btree (name, date_time, venue);
 
 
 --
