@@ -1,6 +1,7 @@
 package Main;
 
 import Model.EventRepositoryImpl;
+import java.sql.DriverManager;
 import View.CreateEventView;
 import ViewModel.CreateEventViewModel;
 import javafx.application.Application;
@@ -22,7 +23,7 @@ public class Main extends Application
     CreateEventView view = loader.getController();
 
     // Create Model + ViewModel
-    EventRepositoryImpl repository = new EventRepositoryImpl();
+    EventRepositoryImpl repository =  EventRepositoryImpl.getInstance();
     CreateEventViewModel viewModel = new CreateEventViewModel(repository);
 
     // Connect View ↔ ViewModel

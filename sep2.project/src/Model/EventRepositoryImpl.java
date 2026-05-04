@@ -29,7 +29,7 @@ public class EventRepositoryImpl implements EventRepository
   {
     //each of us has different passowrd, so when running it you need to change to your personal Postgres pasword
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-        "postgres", "Software2025");
+        "postgres", "252006");
   }
 
   //CRUD method = Create, Read, Update, Delete
@@ -126,7 +126,7 @@ public class EventRepositoryImpl implements EventRepository
         resultSet.getInt("event_id"),
         resultSet.getString("name"),
         resultSet.getString("description"),
-        resultSet.getString("date"),
+        resultSet.getTimestamp("date_time").toLocalDateTime(),
         resultSet.getString("venue"),
         resultSet.getString("address"),
         resultSet.getDouble("ticket_price"),
