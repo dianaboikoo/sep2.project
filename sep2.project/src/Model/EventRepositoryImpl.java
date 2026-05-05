@@ -29,7 +29,7 @@ public class EventRepositoryImpl implements EventRepository
   {
     //each of us has different passowrd, so when running it you need to change to your personal Postgres pasword
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-        "postgres", "252006");
+        "postgres", "1234");
   }
 
   //CRUD method = Create, Read, Update, Delete
@@ -48,8 +48,9 @@ public class EventRepositoryImpl implements EventRepository
       statement.setDouble(6, event.getTicketPrice());
       statement.setInt(7, event.getTotalTickets());
       statement.setInt(8, event.getTicketsSold());
-      statement.setString(9, event.getImageURL());
       statement.setString(10, event.getStatus().toString());
+      statement.setString(9, event.getImageURL());
+
       statement.executeUpdate(); //always need to execute/close at the end
       return event;
     }
@@ -132,7 +133,7 @@ public class EventRepositoryImpl implements EventRepository
         resultSet.getDouble("ticket_price"),
         resultSet.getInt("total_tickets"),
         resultSet.getInt("tickets_sold"),
-        resultSet.getString("image_url"),
+        resultSet.getString("imageurl"),
         EventStatus.valueOf(resultSet.getString("status")) //converts string "DRAFT" stored in dbs to Java value as enum
     );
   }

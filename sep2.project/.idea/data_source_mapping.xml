@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/75025cb3-bba3-4094-9726-45a1036dff59/console.sql" value="75025cb3-bba3-4094-9726-45a1036dff59" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/75025cb3-bba3-4094-9726-45a1036dff59/console_1.sql" value="75025cb3-bba3-4094-9726-45a1036dff59" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/75025cb3-bba3-4094-9726-45a1036dff59/console_2.sql" value="75025cb3-bba3-4094-9726-45a1036dff59" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/75025cb3-bba3-4094-9726-45a1036dff59/console_3.sql" value="75025cb3-bba3-4094-9726-45a1036dff59" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/75025cb3-bba3-4094-9726-45a1036dff59/console_4.sql" value="75025cb3-bba3-4094-9726-45a1036dff59" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/75025cb3-bba3-4094-9726-45a1036dff59/console_5.sql" value="75025cb3-bba3-4094-9726-45a1036dff59" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/75025cb3-bba3-4094-9726-45a1036dff59/console_6.sql" value="75025cb3-bba3-4094-9726-45a1036dff59" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/bb6cb5ab-0e75-4488-b651-becd81cda32b/console.sql" value="bb6cb5ab-0e75-4488-b651-becd81cda32b" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/bb6cb5ab-0e75-4488-b651-becd81cda32b/console_1.sql" value="bb6cb5ab-0e75-4488-b651-becd81cda32b" />
+    <file url="file://$PROJECT_DIR$/Sprint 1 Database.sql" value="75025cb3-bba3-4094-9726-45a1036dff59" />
+  </component>
+</project>
