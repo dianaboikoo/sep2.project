@@ -3,6 +3,8 @@ package ViewModel;
 import Model.Event;
 import Model.EventRepository;
 import Model.EventStatus;
+import Model.Category;
+import Model.CategoryService;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -20,9 +22,13 @@ public class CreateEventViewModel
     private EventValidator validator;
     private List<FieldError> lastErrors;
 
-    public CreateEventViewModel(EventRepository repository)
+    private CategoryService categoryService;
+
+    public CreateEventViewModel(EventRepository repository, CategoryService categoryService)
     {
+
         this.repository = repository;
+        this.categoryService = categoryService;
         this.form = new CreateEventForm();
         this.validator = new EventValidator();
         this.lastErrors = new ArrayList<>();
@@ -81,6 +87,17 @@ public class CreateEventViewModel
             lastErrors.add(new FieldError("_general",
                     "Could not save event: " + e.getMessage()));
             return false;
+        }
+    }
+    public List<Category> getAllCategories()
+    {
+        try
+        {
+            return categoryService.findAll();
+        }
+        catch (java.sql.SQLException e)
+        {
+            return new ArrayList<>();
         }
     }
 

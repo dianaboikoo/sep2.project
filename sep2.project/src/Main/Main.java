@@ -1,5 +1,7 @@
 package Main;
 
+import Model.CategoryRepositoryImpl;
+import Model.CategoryService;
 import Model.EventRepositoryImpl;
 import java.sql.DriverManager;
 import View.CreateEventView;
@@ -24,14 +26,31 @@ public class Main extends Application
 
     // Create Model + ViewModel
     EventRepositoryImpl repository =  EventRepositoryImpl.getInstance();
-    CreateEventViewModel viewModel = new CreateEventViewModel(repository);
+    CategoryRepositoryImpl categoryRepo = CategoryRepositoryImpl.getInstance();
+
+    CategoryService categoryService = new CategoryService(categoryRepo);
+
+    CreateEventViewModel viewModel = new CreateEventViewModel(repository, categoryService);
 
     // Connect View ↔ ViewModel
     view.init(viewModel);
-      System.out.println("sasa");
     primaryStage.setTitle("Create Event");
     primaryStage.setScene(scene);
     primaryStage.show();
+
+    //test
+      // Quick verification — remove after testing
+      System.out.println("All categories: " + categoryService.findAll());
+
+      categoryService.add("Concert", "Live music events");
+      categoryService.add("Conference", "Professional gatherings");
+      System.out.println("After add: " + categoryService.findAll());
+
+      categoryService.edit("Conference", "Workshop", "Hands-on learning");
+      System.out.println("After edit: " + categoryService.findAll());
+
+      categoryService.delete("Workshop");
+      System.out.println("After delete: " + categoryService.findAll());
   }
 
   public static void main(String[] args)
