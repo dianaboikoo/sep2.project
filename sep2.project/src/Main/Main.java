@@ -28,7 +28,7 @@ public class Main extends Application
 
     // Connect View ↔ ViewModel
     view.init(viewModel);
-
+      System.out.println("sasa");
     primaryStage.setTitle("Create Event");
     primaryStage.setScene(scene);
     primaryStage.show();
