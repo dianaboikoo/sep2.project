@@ -37,20 +37,8 @@ public class Main extends Application
     primaryStage.setTitle("Create Event");
     primaryStage.setScene(scene);
     primaryStage.show();
+    
 
-    //test
-      // Quick verification — remove after testing
-      System.out.println("All categories: " + categoryService.findAll());
-
-      categoryService.add("Concert", "Live music events");
-      categoryService.add("Conference", "Professional gatherings");
-      System.out.println("After add: " + categoryService.findAll());
-
-      categoryService.edit("Conference", "Workshop", "Hands-on learning");
-      System.out.println("After edit: " + categoryService.findAll());
-
-      categoryService.delete("Workshop");
-      System.out.println("After delete: " + categoryService.findAll());
   }
 
   public static void main(String[] args)
