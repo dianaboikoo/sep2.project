@@ -29,7 +29,7 @@ public class EventRepositoryImpl implements EventRepository
   {
     //each of us has different passowrd, so when running it you need to change to your personal Postgres pasword
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-        "postgres", "1234");
+        "postgres", "252006");
   }
 
   //CRUD method = Create, Read, Update, Delete
@@ -38,18 +38,19 @@ public class EventRepositoryImpl implements EventRepository
   {
     try (Connection connection = getConnection())
     {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO events(name, description, date_time, venue, address, "
-          + "ticket_price, total_tickets, tickets_sold, status, imageurl) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+      PreparedStatement statement = connection.prepareStatement("INSERT INTO events(name, description, date_time, venue, address,category_name,"
+          + "ticket_price, total_tickets, tickets_sold, status, imageurl) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
       statement.setString(1, event.getName());
       statement.setString(2, event.getDescription());
       statement.setTimestamp(3, java.sql.Timestamp.valueOf(event.getDateTime()));
       statement.setString(4, event.getVenue());
       statement.setString(5,event.getAddress());
-      statement.setDouble(6, event.getTicketPrice());
-      statement.setInt(7, event.getTotalTickets());
-      statement.setInt(8, event.getTicketsSold());
+      statement.setString(6, event.getCategoryName());
+      statement.setDouble(7, event.getTicketPrice());
+      statement.setInt(8, event.getTotalTickets());
+      statement.setInt(9, event.getTicketsSold());
       statement.setString(10, event.getStatus().toString());
-      statement.setString(9, event.getImageURL());
+      statement.setString(11, event.getImageURL());
 
       statement.executeUpdate(); //always need to execute/close at the end
       return event;
@@ -130,6 +131,7 @@ public class EventRepositoryImpl implements EventRepository
         resultSet.getTimestamp("date_time").toLocalDateTime(),
         resultSet.getString("venue"),
         resultSet.getString("address"),
+        resultSet.getString("category_name"),
         resultSet.getDouble("ticket_price"),
         resultSet.getInt("total_tickets"),
         resultSet.getInt("tickets_sold"),
