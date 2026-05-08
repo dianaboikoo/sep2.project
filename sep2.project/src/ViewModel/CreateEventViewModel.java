@@ -43,6 +43,7 @@ public class CreateEventViewModel
             case "dateTime":     form.setDateTime(value); break;
             case "venue":        form.setVenue(value); break;
             case "address":      form.setAddress(value); break;
+            case "category":     form.setCategoryName(value); break;
             case "ticketPrice":  form.setTicketPrice(value); break;
             case "totalTickets": form.setTotalTickets(value); break;
             case "imageURL":     form.setImageURL(value); break;
@@ -68,6 +69,7 @@ public class CreateEventViewModel
                 LocalDateTime.parse(form.getDateTime().trim(), DATE_TIME_FORMAT),
                 form.getVenue().trim(),
                 form.getAddress().trim(),
+                form.getCategoryName().trim(),
                 Double.parseDouble(form.getTicketPrice().trim()),
                 Integer.parseInt(form.getTotalTickets().trim()),
                 0, // ticketsSold = 0 for new event
@@ -89,6 +91,7 @@ public class CreateEventViewModel
             return false;
         }
     }
+
     public List<Category> getAllCategories()
     {
         try

@@ -15,9 +15,10 @@ public class Event
   private int ticketsSold;
   private EventStatus status;
   private String imageURL;
+  private String categoryName;
 
   public Event(int eventId, String name, String description,
-      LocalDateTime dateTime, String venue, String address,
+      LocalDateTime dateTime, String venue, String address, String categoryName,
       double ticketPrice, int totalTickets, int ticketsSold,
       String imageURL, EventStatus status)
   {
@@ -27,11 +28,13 @@ public class Event
     this.dateTime = dateTime;
     this.venue = venue;
     this.address = address;
+    this.categoryName = categoryName;
     this.ticketPrice = ticketPrice;
     this.totalTickets = totalTickets;
     this.ticketsSold = ticketsSold;
     this.status = status;
     this.imageURL = imageURL;
+
   }
 
   public boolean publish()
@@ -56,6 +59,7 @@ public class Event
   public LocalDateTime getDateTime() { return dateTime; }
   public String getVenue() { return venue; }
   public String getAddress() { return address; }
+  public String getCategoryName() { return  categoryName; }
   public double getTicketPrice() { return ticketPrice; }
   public int getTotalTickets() { return totalTickets; }
   public int getTicketsSold() { return ticketsSold; }
