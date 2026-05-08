@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -18,6 +19,8 @@ import java.util.Optional;
 
 public class CategoryManagementView
 {
+  private static final int NAME_MAX = 100;
+
   // ---- Add New Category form fields ----
   @FXML private TextField nameField;
   @FXML private TextArea descriptionField;
@@ -41,7 +44,34 @@ public class CategoryManagementView
   {
     this.viewModel = viewModel;
     setupTableColumns();
+    setupAddFormValidation();
     refreshTable();
+  }
+
+  // =====================================================
+  // Add form: live validation
+  // =====================================================
+  private void setupAddFormValidation()
+  {
+    // Disable Add button when name is empty (or only whitespace).
+    // Listener fires every keystroke.
+    nameField.textProperty().addListener((obs, oldVal, newVal) ->
+    {
+      updateAddButtonState();
+      // also clear stale error as soon as user starts typing
+      if (newVal != null && !newVal.trim().isEmpty())
+      {
+        nameError.setText("");
+      }
+    });
+    // Initial state: empty field → disabled button
+    updateAddButtonState();
+  }
+
+  private void updateAddButtonState()
+  {
+    String text = nameField.getText();
+    addButton.setDisable(text == null || text.trim().isEmpty());
   }
 
   // =====================================================
@@ -108,13 +138,25 @@ public class CategoryManagementView
   private void onAddCategory()
   {
     clearErrors();
-    setBusy(true);
 
-    String name = nameField.getText();
+    String name = nameField.getText() == null ? "" : nameField.getText();
     String desc = descriptionField.getText();
 
-    boolean ok = viewModel.addCategory(name, desc);
+    // ---- Frontend (client-side) validation ----
+    if (name.trim().isEmpty())
+    {
+      nameError.setText("Name is required");
+      return;
+    }
+    if (name.length() > NAME_MAX)
+    {
+      nameError.setText("Name must be under " + NAME_MAX + " characters");
+      return;
+    }
 
+    // ---- Send to backend (service layer) ----
+    setBusy(true);
+    boolean ok = viewModel.addCategory(name, desc);
     setBusy(false);
 
     if (ok)
@@ -147,23 +189,47 @@ public class CategoryManagementView
     Label errorLabel = new Label();
     errorLabel.setTextFill(Color.RED);
 
-    javafx.scene.layout.VBox content = new javafx.scene.layout.VBox(8,
+    VBox content = new VBox(8,
         new Label("Name *"), nameInput,
         new Label("Description"), descInput,
         errorLabel);
     content.setPadding(new Insets(10));
     dialog.getDialogPane().setContent(content);
 
-    // Intercept Save so we can validate without closing on error
+    // Get the Save button so we can control its enabled state
     final Button saveButton = (Button) dialog.getDialogPane().lookupButton(saveButtonType);
+
+    // ---- Disable Save while name is empty ----
+    nameInput.textProperty().addListener((obs, oldVal, newVal) ->
+    {
+      saveButton.setDisable(newVal == null || newVal.trim().isEmpty());
+      errorLabel.setText("");
+    });
+
+    // ---- Intercept Save to validate without closing on error ----
     saveButton.addEventFilter(javafx.event.ActionEvent.ACTION, ev ->
     {
       errorLabel.setText("");
+      String newName = nameInput.getText() == null ? "" : nameInput.getText();
+      String newDesc = descInput.getText();
+
+      // Frontend validation
+      if (newName.trim().isEmpty())
+      {
+        errorLabel.setText("Name is required");
+        ev.consume();
+        return;
+      }
+      if (newName.length() > NAME_MAX)
+      {
+        errorLabel.setText("Name must be under " + NAME_MAX + " characters");
+        ev.consume();
+        return;
+      }
+
+      // Send to backend
       setBusy(true);
-      boolean ok = viewModel.editCategory(
-          category.getName(),
-          nameInput.getText(),
-          descInput.getText());
+      boolean ok = viewModel.editCategory(category.getName(), newName, newDesc);
       setBusy(false);
 
       if (!ok)
@@ -247,6 +313,8 @@ public class CategoryManagementView
   {
     nameField.clear();
     descriptionField.clear();
+    // disable button again since field is now empty
+    updateAddButtonState();
   }
 
   /** Shows a transient toast-style message (auto-clears after 3s). */
@@ -269,7 +337,15 @@ public class CategoryManagementView
   /** Disable all action buttons while a request is "in-flight". */
   private void setBusy(boolean busy)
   {
-    addButton.setDisable(busy);
+    // when not busy, restore based on whether the field has text
+    if (busy)
+    {
+      addButton.setDisable(true);
+    }
+    else
+    {
+      updateAddButtonState();
+    }
     categoryTable.setDisable(busy);
   }
 }

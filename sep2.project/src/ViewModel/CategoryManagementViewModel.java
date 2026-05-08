@@ -26,7 +26,6 @@ public class CategoryManagementViewModel
 
   /**
    * Load all categories from the database into the in-memory list.
-   * Returns true on success, false on DB error (check getLastErrors()).
    */
   public boolean loadCategories()
   {
@@ -46,7 +45,11 @@ public class CategoryManagementViewModel
 
   /**
    * Add a new category. Returns true on success, false otherwise.
-   * Populates lastErrors with field-level or general errors on failure.
+   * Populates lastErrors on failure with field-level (name) or general errors.
+   *
+   * Maps service-layer exceptions to spec-defined errors:
+   *  - IllegalArgumentException → 400 (field error on "name")
+   *  - IllegalStateException    → 409 (duplicate, "Category already exists")
    */
   public boolean addCategory(String name, String description)
   {
@@ -60,14 +63,14 @@ public class CategoryManagementViewModel
     }
     catch (IllegalArgumentException e)
     {
-      // validation error (empty name, too long, etc.) → field error
+      // 400 → validation error on the name field
       lastErrors.add(new FieldError("name", e.getMessage()));
       return false;
     }
     catch (IllegalStateException e)
     {
-      // duplicate name (maps to HTTP 409 conceptually)
-      lastErrors.add(new FieldError("name", "Name already exists"));
+      // 409 → duplicate. Spec wants "Category already exists" as the message.
+      lastErrors.add(new FieldError("name", "Category already exists"));
       return false;
     }
     catch (SQLException e)
@@ -83,7 +86,7 @@ public class CategoryManagementViewModel
   }
 
   /**
-   * Edit an existing category. Pre-fill comes from the row; this just persists.
+   * Edit an existing category.
    */
   public boolean editCategory(String currentName, String newName, String newDescription)
   {
@@ -92,7 +95,7 @@ public class CategoryManagementViewModel
     try
     {
       categoryService.edit(currentName, newName, newDescription);
-      loadCategories();         // refresh list
+      loadCategories();
       return true;
     }
     catch (IllegalArgumentException e)
@@ -102,6 +105,7 @@ public class CategoryManagementViewModel
     }
     catch (IllegalStateException e)
     {
+      // could be "Category already exists" or "Category not found"
       lastErrors.add(new FieldError("name", e.getMessage()));
       return false;
     }
@@ -118,7 +122,7 @@ public class CategoryManagementViewModel
   }
 
   /**
-   * Delete a category. Events using this category are reassigned to "Uncategorized".
+   * Delete a category. Events using it are reassigned to "Uncategorized".
    */
   public boolean deleteCategory(String name)
   {
@@ -127,7 +131,7 @@ public class CategoryManagementViewModel
     try
     {
       categoryService.delete(name);
-      loadCategories();         // refresh list
+      loadCategories();
       return true;
     }
     catch (IllegalArgumentException e)
