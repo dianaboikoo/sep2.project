@@ -16,6 +16,10 @@ public class Main extends Application
   @Override
   public void start(Stage primaryStage) throws Exception
   {
+    EventRepositoryImpl repository = EventRepositoryImpl.getInstance();
+    CategoryRepositoryImpl categoryRepo = CategoryRepositoryImpl.getInstance();
+    CategoryService categoryService = new CategoryService(categoryRepo);
+
     FXMLLoader loader = new FXMLLoader(
         getClass().getResource("/View/CreateEventView.fxml"));
 
@@ -25,15 +29,11 @@ public class Main extends Application
     CreateEventView view = loader.getController();
 
     // Create Model + ViewModel
-    EventRepositoryImpl repository =  EventRepositoryImpl.getInstance();
-    CategoryRepositoryImpl categoryRepo = CategoryRepositoryImpl.getInstance();
-
-    CategoryService categoryService = new CategoryService(categoryRepo);
-
     CreateEventViewModel viewModel = new CreateEventViewModel(repository, categoryService);
 
     // Connect View ↔ ViewModel
-    view.init(viewModel);
+    view.init(viewModel, categoryService);
+
     primaryStage.setTitle("Create Event");
     primaryStage.setScene(scene);
     primaryStage.show();

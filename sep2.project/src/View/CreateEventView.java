@@ -1,160 +1,215 @@
 package View;
 
 import Model.Category;
+import Model.CategoryService;
+import ViewModel.CategoryManagementViewModel;
 import ViewModel.CreateEventViewModel;
 import ViewModel.FieldError;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CreateEventView
 {
-    // Input fields
-    @FXML private TextField nameField;
-    @FXML private TextArea descriptionField;
-    @FXML private TextField dateField;
-    @FXML private TextField timeField;
-    @FXML private TextField venueField;
-    @FXML private TextField addressField;
-    @FXML private ComboBox<String> categoryComboBox;
-    @FXML private TextField ticketPriceField;
-    @FXML private TextField totalTicketsField;
-    @FXML private TextField imageURLField;
+  // Input fields
+  @FXML private TextField nameField;
+  @FXML private TextArea descriptionField;
+  @FXML private TextField dateField;
+  @FXML private TextField timeField;
+  @FXML private TextField venueField;
+  @FXML private TextField addressField;
+  @FXML private ComboBox<String> categoryComboBox;
+  @FXML private TextField ticketPriceField;
+  @FXML private TextField totalTicketsField;
+  @FXML private TextField imageURLField;
 
-    // Error labels
-    @FXML private Label nameError;
-    @FXML private Label descriptionError;
-    @FXML private Label dateTimeError;
-    @FXML private Label venueError;
-    @FXML private Label addressError;
-    @FXML private Label categoryError;
-    @FXML private Label ticketPriceError;
-    @FXML private Label totalTicketsError;
-    @FXML private Label imageURLError;
+  // Error labels
+  @FXML private Label nameError;
+  @FXML private Label descriptionError;
+  @FXML private Label dateTimeError;
+  @FXML private Label venueError;
+  @FXML private Label addressError;
+  @FXML private Label categoryError;
+  @FXML private Label ticketPriceError;
+  @FXML private Label totalTicketsError;
+  @FXML private Label imageURLError;
 
-    // General message (success / DB errors)
-    @FXML private Label generalMessage;
+  // General message (success / DB errors)
+  @FXML private Label generalMessage;
 
-    private CreateEventViewModel viewModel;
+  private CreateEventViewModel viewModel;
+  private CategoryService categoryService;   // needed to launch the manage-categories window
 
-    public void init(CreateEventViewModel viewModel)
+  public void init(CreateEventViewModel viewModel, CategoryService categoryService)
+  {
+    this.viewModel = viewModel;
+    this.categoryService = categoryService;
+    populateCategoryDropdown();
+  }
+
+  private void populateCategoryDropdown()
+  {
+    List<Category> categories = viewModel.getAllCategories();
+    List<String> names = categories.stream()
+        .map(Category::getName)
+        .collect(Collectors.toList());
+
+    // remember current selection so it stays selected after refresh
+    String currentlySelected = categoryComboBox.getValue();
+    categoryComboBox.setItems(FXCollections.observableArrayList(names));
+    if (currentlySelected != null && names.contains(currentlySelected))
     {
-        this.viewModel = viewModel;
-        populateCategoryDropdown();
+      categoryComboBox.setValue(currentlySelected);
     }
+  }
 
-    private void populateCategoryDropdown()
+  @FXML
+  private void onCreateEvent()
+  {
+    clearErrors();
+
+    // Push current form values to the ViewModel
+    viewModel.updateField("name", nameField.getText());
+    viewModel.updateField("description", descriptionField.getText());
+    viewModel.updateField("dateTime", combineDateTime());
+    viewModel.updateField("venue", venueField.getText());
+    viewModel.updateField("address", addressField.getText());
+    viewModel.updateField("category", getSelectedCategory());
+    viewModel.updateField("ticketPrice", ticketPriceField.getText());
+    viewModel.updateField("totalTickets", totalTicketsField.getText());
+    viewModel.updateField("imageURL", imageURLField.getText());
+
+    boolean success = viewModel.onCreateEvent();
+
+    if (success)
     {
-        List<Category> categories = viewModel.getAllCategories();
-        List<String> names = categories.stream()
-                .map(Category::getName)
-                .collect(Collectors.toList());
-        categoryComboBox.setItems(FXCollections.observableArrayList(names));
+      clearForm();
+      generalMessage.setTextFill(Color.GREEN);
+      generalMessage.setText("Event created successfully");
     }
-
-    @FXML
-    private void onCreateEvent()
+    else
     {
-        clearErrors();
-
-        // Push current form values to the ViewModel
-        viewModel.updateField("name", nameField.getText());
-        viewModel.updateField("description", descriptionField.getText());
-        viewModel.updateField("dateTime", combineDateTime());
-        viewModel.updateField("venue", venueField.getText());
-        viewModel.updateField("address", addressField.getText());
-        viewModel.updateField("category", getSelectedCategory());
-        viewModel.updateField("ticketPrice", ticketPriceField.getText());
-        viewModel.updateField("totalTickets", totalTicketsField.getText());
-        viewModel.updateField("imageURL", imageURLField.getText());
-
-        boolean success = viewModel.onCreateEvent();
-
-        if (success)
-        {
-            clearForm();
-            generalMessage.setTextFill(Color.GREEN);
-            generalMessage.setText("Event created successfully");
-        }
-        else
-        {
-            showFieldErrors(viewModel.getLastErrors());
-        }
+      showFieldErrors(viewModel.getLastErrors());
     }
+  }
 
-    private String getSelectedCategory()
+  /**
+   * Open the Manage Categories window as a modal dialog.
+   * When it closes, refresh the dropdown so any new categories appear.
+   */
+  @FXML
+  private void onManageCategories()
+  {
+    try
     {
-        String selected = categoryComboBox.getValue();
-        return selected == null ? "" : selected;
-    }
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/View/CategoryManagementView.fxml"));
+      Scene scene = new Scene(loader.load());
 
-    private String combineDateTime()
+      CategoryManagementView mgmtView = loader.getController();
+      CategoryManagementViewModel mgmtVM =
+          new CategoryManagementViewModel(categoryService);
+      mgmtView.init(mgmtVM);
+
+      Stage stage = new Stage();
+      stage.setTitle("Manage Categories");
+      stage.setScene(scene);
+      // make it modal so user must close it before going back to Create Event
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.initOwner(categoryComboBox.getScene().getWindow());
+      stage.showAndWait();
+
+      // refresh dropdown — any new/edited/deleted categories now reflected
+      populateCategoryDropdown();
+    }
+    catch (Exception e)
     {
-        String date = dateField.getText() == null ? "" : dateField.getText().trim();
-        String time = timeField.getText() == null ? "" : timeField.getText().trim();
-
-        if (date.isEmpty() && time.isEmpty())
-        {
-            return "";
-        }
-        return date + " " + time;
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText("Could not open Manage Categories");
+      alert.setContentText(e.getMessage());
+      alert.showAndWait();
     }
+  }
 
-    private void showFieldErrors(List<FieldError> errors)
+  private String getSelectedCategory()
+  {
+    String selected = categoryComboBox.getValue();
+    return selected == null ? "" : selected;
+  }
+
+  private String combineDateTime()
+  {
+    String date = dateField.getText() == null ? "" : dateField.getText().trim();
+    String time = timeField.getText() == null ? "" : timeField.getText().trim();
+
+    if (date.isEmpty() && time.isEmpty())
     {
-        for (FieldError error : errors)
-        {
-            switch (error.getFieldName())
-            {
-                case "name":         nameError.setText(error.getMessage()); break;
-                case "description":  descriptionError.setText(error.getMessage()); break;
-                case "dateTime":     dateTimeError.setText(error.getMessage()); break;
-                case "venue":        venueError.setText(error.getMessage()); break;
-                case "address":      addressError.setText(error.getMessage()); break;
-                case "category":     categoryError.setText(error.getMessage()); break;
-                case "ticketPrice":  ticketPriceError.setText(error.getMessage()); break;
-                case "totalTickets": totalTicketsError.setText(error.getMessage()); break;
-                case "imageURL":     imageURLError.setText(error.getMessage()); break;
-                case "_general":
-                    generalMessage.setTextFill(Color.RED);
-                    generalMessage.setText(error.getMessage());
-                    break;
-            }
-        }
+      return "";
     }
+    return date + " " + time;
+  }
 
-    private void clearErrors()
+  private void showFieldErrors(List<FieldError> errors)
+  {
+    for (FieldError error : errors)
     {
-        nameError.setText("");
-        descriptionError.setText("");
-        dateTimeError.setText("");
-        venueError.setText("");
-        addressError.setText("");
-        categoryError.setText("");
-        ticketPriceError.setText("");
-        totalTicketsError.setText("");
-        imageURLError.setText("");
-        generalMessage.setText("");
+      switch (error.getFieldName())
+      {
+        case "name":         nameError.setText(error.getMessage()); break;
+        case "description":  descriptionError.setText(error.getMessage()); break;
+        case "dateTime":     dateTimeError.setText(error.getMessage()); break;
+        case "venue":        venueError.setText(error.getMessage()); break;
+        case "address":      addressError.setText(error.getMessage()); break;
+        case "category":     categoryError.setText(error.getMessage()); break;
+        case "ticketPrice":  ticketPriceError.setText(error.getMessage()); break;
+        case "totalTickets": totalTicketsError.setText(error.getMessage()); break;
+        case "imageURL":     imageURLError.setText(error.getMessage()); break;
+        case "_general":
+          generalMessage.setTextFill(Color.RED);
+          generalMessage.setText(error.getMessage());
+          break;
+      }
     }
+  }
 
-    private void clearForm()
-    {
-        nameField.clear();
-        descriptionField.clear();
-        dateField.clear();
-        timeField.clear();
-        venueField.clear();
-        addressField.clear();
-        categoryComboBox.getSelectionModel().clearSelection();
-        ticketPriceField.clear();
-        totalTicketsField.clear();
-        imageURLField.clear();
-    }
+  private void clearErrors()
+  {
+    nameError.setText("");
+    descriptionError.setText("");
+    dateTimeError.setText("");
+    venueError.setText("");
+    addressError.setText("");
+    categoryError.setText("");
+    ticketPriceError.setText("");
+    totalTicketsError.setText("");
+    imageURLError.setText("");
+    generalMessage.setText("");
+  }
+
+  private void clearForm()
+  {
+    nameField.clear();
+    descriptionField.clear();
+    dateField.clear();
+    timeField.clear();
+    venueField.clear();
+    addressField.clear();
+    categoryComboBox.getSelectionModel().clearSelection();
+    ticketPriceField.clear();
+    totalTicketsField.clear();
+    imageURLField.clear();
+  }
 }
