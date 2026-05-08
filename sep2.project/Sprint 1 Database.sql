@@ -137,10 +137,14 @@ COPY events.admin (email, password) FROM stdin;
 -- Data for Name: category; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY events.category (name, description) FROM stdin;
-\.
-
-
+INSERT INTO events.category (name, description) VALUES
+('Concert', 'Live music events'),
+('Sports', 'Sporting events and competitions'),
+('Theatre', 'Plays, musicals and performing arts'),
+('Comedy', 'Stand-up and comedy shows'),
+('Food & Drink', 'Food festivals and dining experiences'),
+('Uncategorized', 'Default category for reassigned events')
+;
 --
 -- Data for Name: city; Type: TABLE DATA; Schema: events; Owner: postgres
 --
