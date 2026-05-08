@@ -37,7 +37,7 @@ public class Main extends Application
     primaryStage.setTitle("Create Event");
     primaryStage.setScene(scene);
     primaryStage.show();
-    
+
 
   }
 
