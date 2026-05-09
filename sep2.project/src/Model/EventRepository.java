@@ -10,4 +10,6 @@ public interface EventRepository
  List<Event> findAll() throws SQLException;
  void delete(int id) throws SQLException;
  boolean exists(int id) throws SQLException;
+ List<EventListDto> findAllPublished() throws SQLException;
+ EventDetailDto findPublishedById(int id) throws SQLException;
 }

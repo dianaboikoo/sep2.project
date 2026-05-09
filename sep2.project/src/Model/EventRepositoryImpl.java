@@ -139,4 +139,72 @@ public class EventRepositoryImpl implements EventRepository
         EventStatus.valueOf(resultSet.getString("status")) //converts string "DRAFT" stored in dbs to Java value as enum
     );
   }
+
+
+  @Override
+  public List<EventListDto> findAllPublished() throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement(
+              "SELECT e.event_id, e.name, e.date_time, e.venue, e.address, " +
+                      "e.total_tickets, e.tickets_sold, c.name as category_name, ci.name as city_name " +
+                      "FROM events e " +
+                      "JOIN category c ON e.category_name = c.name " +
+                      "JOIN city ci ON e.zip_code = ci.zip_code " +
+                      "WHERE e.status = 'PUBLISHED' AND e.date_time > NOW() " +
+                      "ORDER BY e.date_time ASC");
+      ResultSet rs = statement.executeQuery();
+      List<EventListDto> result = new ArrayList<>();
+      while (rs.next())
+      {
+        result.add(new EventListDto(
+                rs.getInt("event_id"),
+                rs.getString("name"),
+                rs.getTimestamp("date_time").toLocalDateTime(),
+                rs.getString("venue"),
+                rs.getString("address"),
+                rs.getString("category_name"),
+                rs.getString("city_name"),
+                rs.getInt("total_tickets"),
+                rs.getInt("tickets_sold")
+        ));
+      }
+      return result;
+    }
+  }
+
+  @Override
+  public EventDetailDto findPublishedById(int id) throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement(
+              "SELECT e.event_id, e.name, e.description, e.date_time, e.venue, e.address, " +
+                      "e.ticket_price, e.total_tickets, e.tickets_sold, c.name as category_name, ci.name as city_name " +
+                      "FROM events e " +
+                      "JOIN category c ON e.category_name = c.name " +
+                      "JOIN city ci ON e.zip_code = ci.zip_code " +
+                      "WHERE e.event_id = ? AND e.status = 'PUBLISHED'");
+      statement.setInt(1, id);
+      ResultSet rs = statement.executeQuery();
+      if (rs.next())
+      {
+        return new EventDetailDto(
+                rs.getInt("event_id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getTimestamp("date_time").toLocalDateTime(),
+                rs.getString("venue"),
+                rs.getString("address"),
+                rs.getString("category_name"),
+                rs.getString("city_name"),
+                rs.getDouble("ticket_price"),
+                rs.getInt("total_tickets"),
+                rs.getInt("tickets_sold")
+        );
+      }
+      return null; // not found → view shows 404 page
+    }
+  }
 }
