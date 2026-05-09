@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="560.0" prefWidth="520.0"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="View.EventDetailView">
+    <children>
+
+        <!-- Not found -->
+        <Label fx:id="notFoundLabel"
+               layoutX="30.0" layoutY="20.0"
+               text="Event not found."
+               textFill="red"
+               visible="false" />
+
+        <!-- Title -->
+        <Label fx:id="nameLabel"
+               layoutX="30.0" layoutY="20.0"
+               prefWidth="460.0"
+               style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+        <!-- Description -->
+        <Label layoutX="30.0"  layoutY="65.0"  text="Description" />
+        <Label fx:id="descriptionLabel"
+               layoutX="150.0" layoutY="65.0"
+               prefWidth="340.0" wrapText="true" />
+
+        <!-- Date & Time -->
+        <Label layoutX="30.0"  layoutY="115.0" text="Date &amp; Time" />
+        <Label fx:id="dateTimeLabel"
+               layoutX="150.0" layoutY="115.0" prefWidth="340.0" />
+
+        <!-- Venue -->
+        <Label layoutX="30.0"  layoutY="145.0" text="Venue" />
+        <Label fx:id="venueLabel"
+               layoutX="150.0" layoutY="145.0" prefWidth="340.0" />
+
+        <!-- Address -->
+        <Label layoutX="30.0"  layoutY="175.0" text="Address" />
+        <Label fx:id="addressLabel"
+               layoutX="150.0" layoutY="175.0" prefWidth="340.0" />
+
+        <!-- Category -->
+        <Label layoutX="30.0"  layoutY="205.0" text="Category" />
+        <Label fx:id="categoryLabel"
+               layoutX="150.0" layoutY="205.0" prefWidth="340.0" />
+
+        <!-- City -->
+        <Label layoutX="30.0"  layoutY="235.0" text="City" />
+        <Label fx:id="cityLabel"
+               layoutX="150.0" layoutY="235.0" prefWidth="340.0" />
+
+        <!-- Ticket Price -->
+        <Label layoutX="30.0"  layoutY="275.0" text="Ticket Price" />
+        <Label fx:id="ticketPriceLabel"
+               layoutX="150.0" layoutY="275.0" prefWidth="200.0" />
+
+        <!-- Available Tickets -->
+        <Label layoutX="30.0"  layoutY="305.0" text="Availability" />
+        <Label fx:id="availableTicketsLabel"
+               layoutX="150.0" layoutY="305.0" prefWidth="200.0" />
+
+        <!-- Sold Out badge -->
+        <Label fx:id="soldOutLabel"
+               layoutX="150.0" layoutY="335.0"
+               text="SOLD OUT"
+               textFill="red"
+               style="-fx-font-weight: bold;"
+               visible="false" />
+
+        <!-- Actions -->
+        <Button fx:id="buyTicketButton"
+                layoutX="150.0" layoutY="390.0"
+                text="Buy Ticket"
+                mnemonicParsing="false"
+                onAction="#onBuyTicket" />
+
+        <Button layoutX="280.0" layoutY="390.0"
+                text="Back"
+                mnemonicParsing="false"
+                onAction="#onBack" />
+
+    </children>
+</AnchorPane>
