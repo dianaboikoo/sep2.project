@@ -16,11 +16,21 @@ public class Event
   private EventStatus status;
   private String imageURL;
   private String categoryName;
+  private Integer zipCode; // nullable — city is optional
 
   public Event(int eventId, String name, String description,
       LocalDateTime dateTime, String venue, String address, String categoryName,
       double ticketPrice, int totalTickets, int ticketsSold,
       String imageURL, EventStatus status)
+  {
+    this(eventId, name, description, dateTime, venue, address, categoryName,
+        ticketPrice, totalTickets, ticketsSold, imageURL, status, null);
+  }
+
+  public Event(int eventId, String name, String description,
+      LocalDateTime dateTime, String venue, String address, String categoryName,
+      double ticketPrice, int totalTickets, int ticketsSold,
+      String imageURL, EventStatus status, Integer zipCode)
   {
     this.eventId = eventId;
     this.name = name;
@@ -34,7 +44,7 @@ public class Event
     this.ticketsSold = ticketsSold;
     this.status = status;
     this.imageURL = imageURL;
-
+    this.zipCode = zipCode;
   }
 
   public boolean publish()
@@ -65,4 +75,5 @@ public class Event
   public int getTicketsSold() { return ticketsSold; }
   public EventStatus getStatus() { return status; }
   public String getImageURL() { return imageURL; }
+  public Integer getZipCode() { return zipCode; }
 }

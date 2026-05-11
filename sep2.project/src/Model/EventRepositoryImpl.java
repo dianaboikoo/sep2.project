@@ -38,21 +38,27 @@ public class EventRepositoryImpl implements EventRepository
   {
     try (Connection connection = getConnection())
     {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO events(name, description, date_time, venue, address,category_name,"
-          + "ticket_price, total_tickets, tickets_sold, status, imageurl) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+      PreparedStatement statement = connection.prepareStatement(
+          "INSERT INTO events(name, description, date_time, venue, address, category_name, "
+          + "zip_code, ticket_price, total_tickets, tickets_sold, status, imageurl) "
+          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
       statement.setString(1, event.getName());
       statement.setString(2, event.getDescription());
       statement.setTimestamp(3, java.sql.Timestamp.valueOf(event.getDateTime()));
       statement.setString(4, event.getVenue());
-      statement.setString(5,event.getAddress());
+      statement.setString(5, event.getAddress());
       statement.setString(6, event.getCategoryName());
-      statement.setDouble(7, event.getTicketPrice());
-      statement.setInt(8, event.getTotalTickets());
-      statement.setInt(9, event.getTicketsSold());
-      statement.setString(10, event.getStatus().toString());
-      statement.setString(11, event.getImageURL());
+      if (event.getZipCode() != null)
+        statement.setInt(7, event.getZipCode());
+      else
+        statement.setNull(7, java.sql.Types.NUMERIC);
+      statement.setDouble(8, event.getTicketPrice());
+      statement.setInt(9, event.getTotalTickets());
+      statement.setInt(10, event.getTicketsSold());
+      statement.setString(11, event.getStatus().toString());
+      statement.setString(12, event.getImageURL());
 
-      statement.executeUpdate(); //always need to execute/close at the end
+      statement.executeUpdate();
       return event;
     }
   }
@@ -150,8 +156,9 @@ public class EventRepositoryImpl implements EventRepository
                     "SELECT e.event_id, e.name, e.date_time, e.venue, e.address, " +
                             "e.total_tickets, e.tickets_sold, " +
                             "COALESCE(e.category_name, 'Uncategorized') as category_name, " +
-                            "'' as city_name " +
+                            "COALESCE(c.name, '') as city_name " +
                             "FROM events e " +
+                            "LEFT JOIN city c ON e.zip_code = c.zip_code " +
                             "WHERE e.date_time > NOW() " +
                             "ORDER BY e.date_time ASC");
             ResultSet rs = statement.executeQuery();
@@ -183,8 +190,9 @@ public class EventRepositoryImpl implements EventRepository
                     "SELECT e.event_id, e.name, e.description, e.date_time, e.venue, e.address, " +
                             "e.ticket_price, e.total_tickets, e.tickets_sold, " +
                             "COALESCE(e.category_name, 'Uncategorized') as category_name, " +
-                            "'' as city_name " +
+                            "COALESCE(c.name, '') as city_name " +
                             "FROM events e " +
+                            "LEFT JOIN city c ON e.zip_code = c.zip_code " +
                             "WHERE e.event_id = ?");
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();

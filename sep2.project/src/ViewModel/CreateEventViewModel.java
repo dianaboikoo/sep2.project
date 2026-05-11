@@ -44,6 +44,7 @@ public class CreateEventViewModel
             case "venue":        form.setVenue(value); break;
             case "address":      form.setAddress(value); break;
             case "category":     form.setCategoryName(value); break;
+            case "zipCode":      form.setZipCode(value); break;
             case "ticketPrice":  form.setTicketPrice(value); break;
             case "totalTickets": form.setTotalTickets(value); break;
             case "imageURL":     form.setImageURL(value); break;
@@ -61,6 +62,19 @@ public class CreateEventViewModel
             return false;
         }
 
+        // Parse optional zip code
+        Integer zipCode = null;
+        String rawZip = form.getZipCode() == null ? "" : form.getZipCode().trim();
+        if (!rawZip.isEmpty())
+        {
+            try { zipCode = Integer.parseInt(rawZip); }
+            catch (NumberFormatException e)
+            {
+                lastErrors.add(new FieldError("zipCode", "City ZIP must be a 4-digit number"));
+                return false;
+            }
+        }
+
         // Validation passed, safe to parse and build the Event
         Event event = new Event(
                 0, // new event, no ID yet
@@ -74,7 +88,8 @@ public class CreateEventViewModel
                 Integer.parseInt(form.getTotalTickets().trim()),
                 0, // ticketsSold = 0 for new event
                 form.getImageURL().trim().isEmpty() ? null : form.getImageURL().trim(),
-                EventStatus.DRAFT
+                EventStatus.PUBLISHED,
+                zipCode
         );
 
         try

@@ -8,6 +8,7 @@ public class CreateEventForm
     private String venue;
     private String address;
     private String categoryName;
+    private String zipCode;
     private String ticketPrice;
     private String totalTickets;
     private String imageURL;
@@ -20,6 +21,7 @@ public class CreateEventForm
         this.venue = "";
         this.address = "";
         this.categoryName = "";
+        this.zipCode = "";
         this.ticketPrice = "";
         this.totalTickets = "";
         this.imageURL = "";
@@ -32,6 +34,7 @@ public class CreateEventForm
     public void setVenue(String venue) { this.venue = venue; }
     public void setAddress(String address) { this.address = address; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+    public void setZipCode(String zipCode) { this.zipCode = zipCode; }
     public void setTicketPrice(String ticketPrice) { this.ticketPrice = ticketPrice; }
     public void setTotalTickets(String totalTickets) { this.totalTickets = totalTickets; }
     public void setImageURL(String imageURL) { this.imageURL = imageURL; }
@@ -43,6 +46,7 @@ public class CreateEventForm
     public String getVenue() { return venue; }
     public String getAddress() { return address; }
     public String getCategoryName() { return categoryName; }
+    public String getZipCode() { return zipCode; }
     public String getTicketPrice() { return ticketPrice; }
     public String getTotalTickets() { return totalTickets; }
     public String getImageURL() { return imageURL; }
