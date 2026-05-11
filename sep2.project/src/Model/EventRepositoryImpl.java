@@ -1,6 +1,7 @@
 package Model;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.DriverManager;
@@ -29,7 +30,7 @@ public class EventRepositoryImpl implements EventRepository
   {
     //each of us has different passowrd, so when running it you need to change to your personal Postgres pasword
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-        "postgres", "postgres");
+        "postgres", "Software2025");
   }
 
   //CRUD method = Create, Read, Update, Delete
@@ -161,6 +162,89 @@ public class EventRepositoryImpl implements EventRepository
                             "LEFT JOIN city c ON e.zip_code = c.zip_code " +
                             "WHERE e.date_time > NOW() " +
                             "ORDER BY e.date_time ASC");
+            ResultSet rs = statement.executeQuery();
+            List<EventListDto> result = new ArrayList<>();
+            while (rs.next())
+            {
+                result.add(new EventListDto(
+                        rs.getInt("event_id"),
+                        rs.getString("name"),
+                        rs.getTimestamp("date_time").toLocalDateTime(),
+                        rs.getString("venue"),
+                        rs.getString("address"),
+                        rs.getString("category_name"),
+                        rs.getString("city_name"),
+                        rs.getInt("total_tickets"),
+                        rs.getInt("tickets_sold")
+                ));
+            }
+            return result;
+        }
+    }
+
+    @Override
+    public List<EventListDto> findAllPublishedFiltered(String category, Integer zipCode,
+                                                      LocalDate fromDate, LocalDate toDate) throws SQLException
+    {
+        StringBuilder sql = new StringBuilder(
+                "SELECT e.event_id, e.name, e.date_time, e.venue, e.address, " +
+                        "e.total_tickets, e.tickets_sold, " +
+                        "COALESCE(e.category_name, 'Uncategorized') as category_name, " +
+                        "COALESCE(ci.name, '') as city_name " +
+                        "FROM events e " +
+                        "JOIN category c ON e.category_name = c.name " +
+                        "LEFT JOIN city ci ON e.zip_code = ci.zip_code " +
+                        "WHERE e.status = 'PUBLISHED' AND e.date_time > NOW()");
+
+        List<Object> params = new ArrayList<>();
+
+        if (category != null)
+        {
+            sql.append(" AND e.category_name = ?");
+            params.add(category);
+        }
+        if (zipCode != null)
+        {
+            sql.append(" AND e.zip_code = ?");
+            params.add(zipCode);
+        }
+        if (fromDate != null)
+        {
+            sql.append(" AND e.date_time >= ?");
+            params.add(java.sql.Timestamp.valueOf(fromDate.atStartOfDay()));
+        }
+        if (toDate != null)
+        {
+            sql.append(" AND e.date_time <= ?");
+            params.add(java.sql.Timestamp.valueOf(toDate.atTime(23, 59, 59)));
+        }
+
+        sql.append(" ORDER BY e.date_time ASC");
+
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++)
+            {
+                Object param = params.get(i);
+                if (param instanceof String)
+                {
+                    statement.setString(i + 1, (String) param);
+                }
+                else if (param instanceof Integer)
+                {
+                    statement.setInt(i + 1, (Integer) param);
+                }
+                else if (param instanceof java.sql.Timestamp)
+                {
+                    statement.setTimestamp(i + 1, (java.sql.Timestamp) param);
+                }
+                else
+                {
+                    statement.setObject(i + 1, param);
+                }
+            }
+
             ResultSet rs = statement.executeQuery();
             List<EventListDto> result = new ArrayList<>();
             while (rs.next())

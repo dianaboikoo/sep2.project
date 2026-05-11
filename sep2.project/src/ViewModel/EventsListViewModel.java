@@ -4,6 +4,7 @@ import Model.EventListDto;
 import Model.EventService;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,9 +19,14 @@ public class EventsListViewModel
 
     public List<EventListDto> getPublishedEvents()
     {
+        return getFilteredEvents(null, null, null, null);
+    }
+
+    public List<EventListDto> getFilteredEvents(String category, Integer zipCode, LocalDate from, LocalDate to)
+    {
         try
         {
-            return eventService.getAllEvents();
+            return eventService.getFilteredEvents(category, zipCode, from, to);
         }
         catch (SQLException e)
         {

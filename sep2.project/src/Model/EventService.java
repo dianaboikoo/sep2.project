@@ -1,6 +1,7 @@
 package Model;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class EventService
@@ -15,6 +16,11 @@ public class EventService
     public List<EventListDto> getAllEvents() throws SQLException
     {
         return eventRepository.findAllPublished();
+    }
+
+    public List<EventListDto> getFilteredEvents(String category, Integer zipCode, LocalDate from, LocalDate to) throws SQLException
+    {
+        return eventRepository.findAllPublishedFiltered(category, zipCode, from, to);
     }
 
     public EventDetailDto getEventById(int id) throws SQLException
