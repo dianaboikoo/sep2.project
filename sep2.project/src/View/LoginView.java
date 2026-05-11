@@ -64,7 +64,7 @@ public class LoginView
         CategoryRepositoryImpl catRepo  = CategoryRepositoryImpl.getInstance();
         CategoryService categoryService = new CategoryService(catRepo);
         EventService eventService       = new EventService(eventRepo);
-        EventsListViewModel eventsVM    = new EventsListViewModel(eventService);
+        EventsListViewModel eventsVM = new EventsListViewModel(eventService, categoryService);
 
         FXMLLoader loader = new FXMLLoader(
             getClass().getResource("/View/EventsListView.fxml"));

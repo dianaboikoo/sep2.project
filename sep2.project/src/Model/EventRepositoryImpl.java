@@ -30,7 +30,7 @@ public class EventRepositoryImpl implements EventRepository
   {
     //each of us has different passowrd, so when running it you need to change to your personal Postgres pasword
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-        "postgres", "Software2025");
+        "postgres", "1234db");
   }
 
   //CRUD method = Create, Read, Update, Delete
@@ -299,4 +299,22 @@ public class EventRepositoryImpl implements EventRepository
             return null;
         }
     }
+
+  @Override
+  public List<City> findAllCities() throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement(
+          "SELECT zip_code, name FROM city ORDER BY name");
+      ResultSet rs = statement.executeQuery();
+
+      List<City> cities = new ArrayList<>();
+      while (rs.next())
+      {
+        cities.add(new City(rs.getInt("zip_code"), rs.getString("name")));
+      }
+      return cities;
+    }
+  }
   }

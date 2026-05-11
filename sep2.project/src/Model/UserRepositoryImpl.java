@@ -24,7 +24,7 @@ public class UserRepositoryImpl implements UserRepository
     {
         return DriverManager.getConnection(
             "jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-            "postgres", "Software2025");
+            "postgres", "1234db");
     }
 
     @Override

@@ -6,25 +6,32 @@ import java.util.List;
 
 public class EventService
 {
-    private final EventRepository eventRepository;
+  private final EventRepository eventRepository;
 
-    public EventService(EventRepository eventRepository)
-    {
-        this.eventRepository = eventRepository;
-    }
+  public EventService(EventRepository eventRepository)
+  {
+    this.eventRepository = eventRepository;
+  }
 
-    public List<EventListDto> getAllEvents() throws SQLException
-    {
-        return eventRepository.findAllPublished();
-    }
+  public List<EventListDto> getAllEvents() throws SQLException
+  {
+    return eventRepository.findAllPublished();
+  }
 
-    public List<EventListDto> getFilteredEvents(String category, Integer zipCode, LocalDate from, LocalDate to) throws SQLException
-    {
-        return eventRepository.findAllPublishedFiltered(category, zipCode, from, to);
-    }
+  public List<EventListDto> getFilteredEvents(String category, Integer zipCode,
+      LocalDate from, LocalDate to) throws SQLException
+  {
+    return eventRepository.findAllPublishedFiltered(category, zipCode, from, to);
+  }
 
-    public EventDetailDto getEventById(int id) throws SQLException
-    {
-        return eventRepository.findPublishedById(id);
-    }
+  public EventDetailDto getEventById(int id) throws SQLException
+  {
+    return eventRepository.findPublishedById(id);
+  }
+
+  /** Used to populate the City dropdown in filter UI. */
+  public List<City> getAllCities() throws SQLException
+  {
+    return eventRepository.findAllCities();
+  }
 }
