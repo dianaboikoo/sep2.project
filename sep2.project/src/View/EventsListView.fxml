@@ -5,8 +5,9 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 
-<AnchorPane prefHeight="520.0" prefWidth="860.0"
+<AnchorPane prefHeight="560.0" prefWidth="860.0"
             xmlns="http://javafx.com/javafx/25"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="View.EventsListView">
@@ -33,10 +34,26 @@
                text="No upcoming events at the moment."
                visible="false" />
 
-        <Button layoutX="30.0" layoutY="455.0"
-                text="View Details"
-                mnemonicParsing="false"
-                onAction="#onViewDetails" />
+        <!-- Bottom row: View Details (always visible) + Admin buttons (hidden by default) -->
+        <HBox layoutX="30.0" layoutY="455.0" spacing="12.0">
+            <Button text="View Details"
+                    mnemonicParsing="false"
+                    onAction="#onViewDetails" />
+
+            <Button fx:id="createEventButton"
+                    text="Create Event"
+                    mnemonicParsing="false"
+                    onAction="#onCreateEvent"
+                    visible="false"
+                    managed="false" />
+
+            <Button fx:id="manageCategoriesButton"
+                    text="Manage Categories"
+                    mnemonicParsing="false"
+                    onAction="#onManageCategories"
+                    visible="false"
+                    managed="false" />
+        </HBox>
 
     </children>
 </AnchorPane>
