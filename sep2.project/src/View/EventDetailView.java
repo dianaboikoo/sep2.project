@@ -47,7 +47,7 @@ public class EventDetailView
         addressLabel.setText(event.getAddress());
         categoryLabel.setText(event.getCategoryName());
         cityLabel.setText(event.getCityName());
-        ticketPriceLabel.setText(String.format("€ %.2f", event.getTicketPrice()));
+        ticketPriceLabel.setText(String.format("DKK %.2f", event.getTicketPrice()));
         availableTicketsLabel.setText(event.getAvailableTickets() + " tickets left");
 
         if (event.isSoldOut())

@@ -1,5 +1,9 @@
 ### IntelliJ IDEA ###
 out/
+*.iml
+.idea/misc.xml
+.idea/dataSources.local.xml
+.idea/libraries/lib.xml
 !**/src/main/**/out/
 !**/src/test/**/out/
 
