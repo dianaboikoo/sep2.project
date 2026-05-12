@@ -13,6 +13,7 @@ import ViewModel.CategoryManagementViewModel;
 import ViewModel.CreateEventViewModel;
 import ViewModel.EventDetailViewModel;
 import ViewModel.EventsListViewModel;
+import ViewModel.MyTicketsViewModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -247,6 +248,32 @@ public class EventsListView
 
       Stage stage = new Stage();
       stage.setTitle("Create Event");
+      stage.setScene(scene);
+      stage.show();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
+
+  @FXML
+  private void onMyTickets()
+  {
+    try
+    {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/View/MyTicketsView.fxml"));
+      Scene scene = new Scene(loader.load());
+
+      EventService eventService = new EventService(EventRepositoryImpl.getInstance());
+      MyTicketsViewModel ticketsVM = new MyTicketsViewModel(ticketService, eventService);
+
+      MyTicketsView ticketsView = loader.getController();
+      ticketsView.init(ticketsVM, userEmail);
+
+      Stage stage = new Stage();
+      stage.setTitle("My Tickets");
       stage.setScene(scene);
       stage.show();
     }

@@ -80,9 +80,11 @@
 
         <Label fx:id="noEventsLabel" layoutX="30.0" layoutY="350.0" text="No upcoming events match the current filters." visible="false" />
 
-        <!-- Bottom row: View Details (always visible) + Admin buttons -->
+        <!-- Bottom row: View Details (always visible) + My Tickets + Admin buttons -->
         <HBox layoutX="30.0" layoutY="565.0" spacing="12.0">
             <Button mnemonicParsing="false" onAction="#onViewDetails" text="View Details" />
+
+            <Button mnemonicParsing="false" onAction="#onMyTickets" text="My Tickets" />
 
             <Button fx:id="createEventButton" managed="false" mnemonicParsing="false" onAction="#onCreateEvent" text="Create Event" visible="false" />
 
