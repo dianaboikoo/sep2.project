@@ -30,7 +30,7 @@ public class EventRepositoryImpl implements EventRepository
   {
     //each of us has different passowrd, so when running it you need to change to your personal Postgres pasword
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-        "postgres", "Software2025");
+        "postgres", "252006");
   }
 
   //CRUD method = Create, Read, Update, Delete
@@ -317,4 +317,20 @@ public class EventRepositoryImpl implements EventRepository
       return cities;
     }
   }
+    public boolean updateTicketsSold(int eventId, int quantity) throws SQLException
+    {
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE events " +
+                            "SET tickets_sold = tickets_sold + ? " +
+                            "WHERE event_id = ? " +
+                            "AND tickets_sold + ? <= total_tickets;");
+            statement.setInt(1, quantity);
+            statement.setInt(2, eventId);
+            statement.setInt(3, quantity);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
   }

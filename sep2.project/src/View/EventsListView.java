@@ -7,6 +7,7 @@ import Model.City;
 import Model.EventListDto;
 import Model.EventRepositoryImpl;
 import Model.EventService;
+import Model.TicketService;
 import Model.UserRole;
 import ViewModel.CategoryManagementViewModel;
 import ViewModel.CreateEventViewModel;
@@ -55,13 +56,18 @@ public class EventsListView
   @FXML private Label filterError;
 
   private EventsListViewModel viewModel;
+  private String userEmail;
+  private TicketService ticketService;
 
   private static final DateTimeFormatter FORMATTER =
       DateTimeFormatter.ofPattern("dd MMM yyyy  HH:mm");
 
-  public void init(EventsListViewModel viewModel, UserRole role)
+  public void init(EventsListViewModel viewModel, UserRole role,
+                   String userEmail, TicketService ticketService)
   {
     this.viewModel = viewModel;
+    this.userEmail = userEmail;
+    this.ticketService = ticketService;
     setupColumns();
     setupFilterDropdowns();
     loadEvents();   // initial load (no filter)
@@ -209,7 +215,7 @@ public class EventsListView
       EventDetailView detailView = loader.getController();
       EventService eventService = new EventService(EventRepositoryImpl.getInstance());
       EventDetailViewModel detailVM = new EventDetailViewModel(eventService);
-      detailView.init(detailVM, selected.getEventId());
+      detailView.init(detailVM, selected.getEventId(), userEmail, ticketService);
 
       Stage stage = new Stage();
       stage.setTitle("Event Details");

@@ -1,6 +1,7 @@
 package View;
 
 import Model.EventDetailDto;
+import Model.TicketService;
 import ViewModel.EventDetailViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -27,8 +28,15 @@ public class EventDetailView
     private static final DateTimeFormatter FORMATTER =
         DateTimeFormatter.ofPattern("dd MMM yyyy  HH:mm");
 
-    public void init(EventDetailViewModel viewModel, int eventId)
+    private String userEmail;
+    private TicketService ticketService;
+
+    public void init(EventDetailViewModel viewModel, int eventId,
+                     String userEmail, TicketService ticketService)
     {
+        this.userEmail = userEmail;
+        this.ticketService = ticketService;
+
         EventDetailDto event = viewModel.getEvent(eventId);
 
         if (event == null)

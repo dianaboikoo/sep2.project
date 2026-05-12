@@ -1,10 +1,6 @@
 package View;
 
-import Model.CategoryRepositoryImpl;
-import Model.CategoryService;
-import Model.EventRepositoryImpl;
-import Model.EventService;
-import Model.UserRole;
+import Model.*;
 import ViewModel.CreateEventViewModel;
 import ViewModel.EventsListViewModel;
 import ViewModel.LoginViewModel;
@@ -23,6 +19,7 @@ public class LoginView
     @FXML private Label errorLabel;
 
     private LoginViewModel viewModel;
+    private String loggedInEmail;
 
     public void init(LoginViewModel viewModel)
     {
@@ -44,10 +41,11 @@ public class LoginView
             return;
         }
 
+        this.loggedInEmail = email.trim();   // store it
+
         try
         {
             openMainWindow(role);
-            // Close login window
             Stage loginStage = (Stage) emailField.getScene().getWindow();
             loginStage.close();
         }
@@ -60,24 +58,27 @@ public class LoginView
 
     private void openMainWindow(UserRole role) throws Exception
     {
-        EventRepositoryImpl eventRepo   = EventRepositoryImpl.getInstance();
-        CategoryRepositoryImpl catRepo  = CategoryRepositoryImpl.getInstance();
+        EventRepositoryImpl    eventRepo    = EventRepositoryImpl.getInstance();
+        CategoryRepositoryImpl catRepo      = CategoryRepositoryImpl.getInstance();
+        TicketRepositoryImpl   ticketRepo   = TicketRepositoryImpl.getInstance();
+
         CategoryService categoryService = new CategoryService(catRepo);
-        EventService eventService       = new EventService(eventRepo);
-        EventsListViewModel eventsVM = new EventsListViewModel(eventService, categoryService);
+        EventService    eventService    = new EventService(eventRepo);
+        TicketService ticketService   = new TicketService(ticketRepo, eventRepo);
+
+        EventsListViewModel eventsVM = new EventsListViewModel(
+                eventService, categoryService);
 
         FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/View/EventsListView.fxml"));
+                getClass().getResource("/View/EventsListView.fxml"));
         Scene scene = new Scene(loader.load());
 
         EventsListView eventsView = loader.getController();
-        eventsView.init(eventsVM, role);
+        eventsView.init(eventsVM, role, loggedInEmail, ticketService);
 
         Stage stage = new Stage();
         stage.setTitle(role == UserRole.ADMIN ? "Events — Admin" : "Events");
         stage.setScene(scene);
         stage.show();
-
-        // Admin also gets Create Event and Category Management via buttons in the view
     }
 }
