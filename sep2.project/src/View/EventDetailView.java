@@ -3,7 +3,10 @@ package View;
 import Model.EventDetailDto;
 import Model.TicketService;
 import ViewModel.EventDetailViewModel;
+import ViewModel.PurchaseTicketViewModel;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -30,6 +33,7 @@ public class EventDetailView
 
     private String userEmail;
     private TicketService ticketService;
+    private EventDetailDto currentEvent;
 
     public void init(EventDetailViewModel viewModel, int eventId,
                      String userEmail, TicketService ticketService)
@@ -38,6 +42,7 @@ public class EventDetailView
         this.ticketService = ticketService;
 
         EventDetailDto event = viewModel.getEvent(eventId);
+        this.currentEvent = event;
 
         if (event == null)
         {
@@ -80,6 +85,26 @@ public class EventDetailView
     @FXML
     private void onBuyTicket()
     {
-        // placeholder — ticket purchase is a future use case
+        if (currentEvent == null) return;
+        try
+        {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/View/PurchaseTicketView.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            PurchaseTicketView purchaseView = loader.getController();
+            PurchaseTicketViewModel purchaseVM =
+                    new PurchaseTicketViewModel(ticketService);
+            purchaseView.init(purchaseVM, currentEvent, userEmail);
+
+            Stage stage = new Stage();
+            stage.setTitle("Buy Ticket");
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
