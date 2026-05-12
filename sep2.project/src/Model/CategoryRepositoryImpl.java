@@ -25,7 +25,7 @@ public class CategoryRepositoryImpl implements  CategoryRepository{
     private Connection getConnection() throws SQLException
     {
         return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-                "postgres", "252006");
+                "postgres", "postgres");
     }
 
     @Override
