@@ -174,6 +174,23 @@ CREATE TABLE events.users (
 ALTER TABLE events.users OWNER TO postgres;
 
 --
+-- Name: tickets; Type: TABLE; Schema: events; Owner: postgres
+-- Note: ticket_id is a UUID string (generated in Java with UUID.randomUUID().toString())
+-- Note: quantity column allows purchasing multiple tickets in one transaction
+--
+
+CREATE TABLE events.tickets (
+    ticket_id VARCHAR(36) PRIMARY KEY,
+    event_id INTEGER NOT NULL REFERENCES events.events(event_id),
+    user_email VARCHAR(255) NOT NULL REFERENCES events.users(email),
+    purchase_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE'
+);
+
+ALTER TABLE events.tickets OWNER TO postgres;
+
+--
 -- Seed data: categories
 --
 
