@@ -89,6 +89,12 @@
             <Button fx:id="createEventButton" managed="false" mnemonicParsing="false" onAction="#onCreateEvent" text="Create Event" visible="false" />
 
             <Button fx:id="manageCategoriesButton" managed="false" mnemonicParsing="false" onAction="#onManageCategories" text="Manage Categories" visible="false" />
+
+            <Button fx:id="viewSalesButton"
+                    text="View Sales"
+                    onAction="#onViewSales"
+                    visible="false"
+                    managed="false" />
         </HBox>
 
     </children>

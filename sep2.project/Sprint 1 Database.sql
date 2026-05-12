@@ -86,6 +86,7 @@ CREATE TABLE events.events (
 );
 
 ALTER TABLE events.events OWNER TO postgres;
+alter table events.events alter column admin_email drop not null ;
 
 --
 -- Name: events_event_id_seq; Type: SEQUENCE; Schema: events; Owner: postgres

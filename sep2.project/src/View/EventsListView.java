@@ -1,5 +1,7 @@
 package View;
 
+import ViewModel.TicketSalesViewModel;
+import javafx.scene.control.Alert;
 import Model.Category;
 import Model.CategoryRepositoryImpl;
 import Model.CategoryService;
@@ -34,6 +36,7 @@ import java.util.List;
 
 public class EventsListView
 {
+  @FXML private Button viewSalesButton;
   @FXML private TableView<EventListDto> eventsTable;
   @FXML private TableColumn<EventListDto, String>  nameColumn;
   @FXML private TableColumn<EventListDto, String>  dateTimeColumn;
@@ -78,6 +81,8 @@ public class EventsListView
     createEventButton.setManaged(isAdmin);
     manageCategoriesButton.setVisible(isAdmin);
     manageCategoriesButton.setManaged(isAdmin);
+    viewSalesButton.setVisible(isAdmin);
+    viewSalesButton.setManaged(isAdmin);
   }
 
   private void setupColumns()
@@ -301,6 +306,42 @@ public class EventsListView
 
       Stage stage = new Stage();
       stage.setTitle("Manage Categories");
+      stage.setScene(scene);
+      stage.show();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
+
+  @FXML
+  private void onViewSales()
+  {
+    EventListDto selected = eventsTable.getSelectionModel().getSelectedItem();
+
+    if (selected == null)
+    {
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setTitle("No event selected");
+      alert.setHeaderText(null);
+      alert.setContentText("Please select an event first");
+      alert.showAndWait();
+      return;
+    }
+
+    try
+    {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/View/TicketSalesView.fxml"));
+      Scene scene = new Scene(loader.load());
+
+      TicketSalesView salesView = loader.getController();
+      TicketSalesViewModel salesVM = new TicketSalesViewModel(ticketService);
+      salesView.init(salesVM, selected.getEventId());
+
+      Stage stage = new Stage();
+      stage.setTitle("Ticket Sales Report");
       stage.setScene(scene);
       stage.show();
     }
