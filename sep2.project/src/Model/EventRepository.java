@@ -16,4 +16,5 @@ public interface EventRepository
   EventDetailDto findPublishedById(int id) throws SQLException;
   List<City> findAllCities() throws SQLException;
   boolean updateTicketsSold(int eventId, int quantity) throws SQLException;
+  Event update(Event event) throws SQLException;
 }

@@ -47,7 +47,6 @@ public class EventsListView
   @FXML private Label  noEventsLabel;
   @FXML private Button createEventButton;
   @FXML private Button manageCategoriesButton;
-  @FXML private Button refreshButton;
 
   // ---- Filter UI controls ----
   @FXML private ComboBox<Category> categoryFilter;
@@ -350,11 +349,5 @@ public class EventsListView
     {
       e.printStackTrace();
     }
-  }
-
-  @FXML
-  private void onRefresh()
-  {
-    loadEvents();
   }
 }
