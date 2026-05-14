@@ -30,7 +30,7 @@ public class TicketRepositoryImpl implements TicketRepository
     {
         return DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-                "postgres", "1234db");
+                "postgres", "252006");
     }
 
     @Override

@@ -1,14 +1,18 @@
 package View;
 
+import Model.EventDetailDto;
 import Model.Ticket;
 import ViewModel.MyTicketsViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 
 import java.time.format.DateTimeFormatter;
@@ -77,6 +81,46 @@ public class MyTicketsView
             noTicketsLabel.setVisible(false);
             ticketsTable.setVisible(true);
             ticketsTable.setItems(FXCollections.observableArrayList(tickets));
+        }
+
+        ticketsTable.setOnMouseClicked(mouseEvent ->
+        {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY
+                    && mouseEvent.getClickCount() == 2)
+            {
+                Ticket selected = ticketsTable.getSelectionModel().getSelectedItem();
+                if (selected != null)
+                {
+                    openDigitalTicket(selected);
+                }
+            }
+        });
+    }
+
+    private void openDigitalTicket(Ticket ticket)
+    {
+        EventDetailDto event = viewModel.getEventById(ticket.getEventId());
+        if (event == null)
+        {
+            return;
+        }
+        try
+        {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/View/DigitalTicketView.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            DigitalTicketView digitalTicketView = loader.getController();
+            digitalTicketView.init(ticket, event);
+
+            Stage stage = new Stage();
+            stage.setTitle("Your Ticket");
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 

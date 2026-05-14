@@ -33,6 +33,19 @@ public class MyTicketsViewModel
         }
     }
 
+    public EventDetailDto getEventById(int eventId)
+    {
+        try
+        {
+            return eventService.getEventById(eventId);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // Helper used by MyTicketsView to render the Event Name column.
     // ViewModel still "depends on TicketService" per spec; EventService is only
     // used to resolve the eventId → event name lookup, since Ticket carries the id only.
