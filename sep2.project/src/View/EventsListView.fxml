@@ -95,7 +95,6 @@
                     onAction="#onViewSales"
                     visible="false"
                     managed="false" />
-            <Button fx:id="editEventButton" managed="false" mnemonicParsing="false" onAction="#onEditEvent" text="Edit Event" visible="false" />
         </HBox>
 
     </children>

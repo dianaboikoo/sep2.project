@@ -1,6 +1,6 @@
 package View;
 
-import ViewModel.*;
+import ViewModel.TicketSalesViewModel;
 import javafx.scene.control.Alert;
 import Model.Category;
 import Model.CategoryRepositoryImpl;
@@ -11,6 +11,11 @@ import Model.EventRepositoryImpl;
 import Model.EventService;
 import Model.TicketService;
 import Model.UserRole;
+import ViewModel.CategoryManagementViewModel;
+import ViewModel.CreateEventViewModel;
+import ViewModel.EventDetailViewModel;
+import ViewModel.EventsListViewModel;
+import ViewModel.MyTicketsViewModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,7 +47,6 @@ public class EventsListView
   @FXML private Label  noEventsLabel;
   @FXML private Button createEventButton;
   @FXML private Button manageCategoriesButton;
-  @FXML private Button editEventButton;
 
   // ---- Filter UI controls ----
   @FXML private ComboBox<Category> categoryFilter;
@@ -79,8 +83,6 @@ public class EventsListView
     manageCategoriesButton.setManaged(isAdmin);
     viewSalesButton.setVisible(isAdmin);
     viewSalesButton.setManaged(isAdmin);
-    editEventButton.setVisible(isAdmin);
-    editEventButton.setManaged(isAdmin);
   }
 
   private void setupColumns()
@@ -342,48 +344,6 @@ public class EventsListView
       stage.setTitle("Ticket Sales Report");
       stage.setScene(scene);
       stage.show();
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-  }
-
-  @FXML
-  private void onEditEvent()
-  {
-    EventListDto selected = eventsTable.getSelectionModel().getSelectedItem();
-
-    if (selected == null)
-    {
-      Alert alert = new Alert(Alert.AlertType.WARNING);
-      alert.setTitle("No event selected");
-      alert.setHeaderText(null);
-      alert.setContentText("Please select an event first");
-      alert.showAndWait();
-      return;
-    }
-
-    try
-    {
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getResource("/View/EditEventView.fxml"));
-      Scene scene = new Scene(loader.load());
-
-      CategoryRepositoryImpl catRepo = CategoryRepositoryImpl.getInstance();
-      CategoryService categoryService = new CategoryService(catRepo);
-      EditEventViewModel editVM = new EditEventViewModel(
-          EventRepositoryImpl.getInstance(), categoryService);
-
-      EditEventView editView = loader.getController();
-      editView.init(editVM, selected.getEventId());
-
-      Stage stage = new Stage();
-      stage.setTitle("Edit Event");
-      stage.setScene(scene);
-      stage.showAndWait(); // wait so table refreshes after closing
-
-      loadEvents(); // refresh table with updated data
     }
     catch (Exception e)
     {
