@@ -30,7 +30,7 @@ public class EventRepositoryImpl implements EventRepository
   {
     //each of us has different passowrd, so when running it you need to change to your personal Postgres pasword
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-        "postgres", "252006");
+        "postgres", "1234");
   }
 
   //CRUD method = Create, Read, Update, Delete
@@ -332,5 +332,47 @@ public class EventRepositoryImpl implements EventRepository
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
         }
+    }
+
+    //no ticket sold = admin shouldn't be able to manipulate sold ticket counts
+    //status = keeping it PUBLISHED as set when created
+    //created_at = never changes after creation
+    public Event update(Event event) throws SQLException
+    {
+      try (Connection connection = getConnection())
+      {
+        PreparedStatement statement = connection.prepareStatement(
+            "UPDATE events SET " +
+                "name = ?, " +
+                "description = ?, " +
+                "date_time = ?, " +
+                "venue = ?, " +
+                "address = ?, " +
+                "category_name = ?, " +
+                "zip_code = ?, " +
+                "ticket_price = ?, " +
+                "total_tickets = ?, " +
+                "imageurl = ?, " +
+                "updated_at = CURRENT_TIMESTAMP " +
+                "WHERE event_id = ?");
+
+        statement.setString(1, event.getName());
+        statement.setString(2, event.getDescription());
+        statement.setTimestamp(3, Timestamp.valueOf(event.getDateTime()));
+        statement.setString(4, event.getVenue());
+        statement.setString(5, event.getAddress());
+        statement.setString(6, event.getCategoryName());
+        if (event.getZipCode() !=null)
+          statement.setInt(7, event.getZipCode());
+        else
+          statement.setNull(7, Types.NUMERIC);
+        statement.setDouble(8, event.getTicketPrice());
+        statement.setInt(9, event.getTotalTickets());
+        statement.setString(10, event.getImageURL());
+        statement.setInt(11, event.getEventId());
+
+        statement.executeUpdate();
+        return event;
+      }
     }
   }

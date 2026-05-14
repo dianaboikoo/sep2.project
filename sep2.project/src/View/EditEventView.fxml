@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="740.0" prefWidth="560.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.EditEventView">
+    <children>
+        <Label layoutX="30.0" layoutY="20.0" text="Edit Event" />
+
+        <Label layoutX="30.0" layoutY="60.0" text="Name" />
+        <TextField fx:id="nameField" layoutX="150.0" layoutY="55.0" prefWidth="350.0" />
+        <Label fx:id="nameError" layoutX="150.0" layoutY="80.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="110.0" text="Description" />
+        <TextArea fx:id="descriptionField" layoutX="150.0" layoutY="105.0" prefHeight="60.0" prefWidth="350.0" />
+        <Label fx:id="descriptionError" layoutX="150.0" layoutY="170.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="200.0" text="Date" />
+        <TextField fx:id="dateField" layoutX="150.0" layoutY="195.0" prefWidth="160.0" promptText="yyyy-MM-dd" />
+
+        <Label layoutX="320.0" layoutY="200.0" text="Time" />
+        <TextField fx:id="timeField" layoutX="380.0" layoutY="195.0" prefWidth="120.0" promptText="HH:mm" />
+        <Label fx:id="dateTimeError" layoutX="150.0" layoutY="220.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="250.0" text="Venue" />
+        <TextField fx:id="venueField" layoutX="150.0" layoutY="245.0" prefWidth="350.0" />
+        <Label fx:id="venueError" layoutX="150.0" layoutY="270.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="300.0" text="Address" />
+        <TextField fx:id="addressField" layoutX="150.0" layoutY="295.0" prefWidth="350.0" />
+        <Label fx:id="addressError" layoutX="150.0" layoutY="320.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="350.0" text="City ZIP" />
+        <TextField fx:id="zipCodeField" layoutX="150.0" layoutY="345.0" prefWidth="160.0" promptText="e.g. 8700 (optional)" />
+        <Label fx:id="zipCodeError" layoutX="150.0" layoutY="370.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="400.0" text="Category" />
+        <ComboBox fx:id="categoryComboBox" layoutX="150.0" layoutY="395.0" prefHeight="25.0" prefWidth="229.0" promptText="Select a category..." />
+        <Label fx:id="categoryError" layoutX="150.0" layoutY="420.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="450.0" text="Ticket price" />
+        <TextField fx:id="ticketPriceField" layoutX="150.0" layoutY="445.0" prefWidth="160.0" promptText="e.g. 99.50" />
+        <Label fx:id="ticketPriceError" layoutX="150.0" layoutY="470.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="500.0" text="Total Tickets" />
+        <TextField fx:id="totalTicketsField" layoutX="150.0" layoutY="495.0" prefWidth="160.0" />
+        <Label fx:id="totalTicketsError" layoutX="150.0" layoutY="520.0" textFill="red" />
+
+        <Label layoutX="30.0" layoutY="550.0" text="Image URL" />
+        <TextField fx:id="imageURLField" layoutX="150.0" layoutY="545.0" prefWidth="350.0" promptText="(optional)" />
+        <Label fx:id="imageURLError" layoutX="150.0" layoutY="570.0" textFill="red" />
+
+        <Button layoutX="150.0" layoutY="610.0" mnemonicParsing="false" onAction="#onSave" text="Save Changes" />
+        <Button layoutX="280.0" layoutY="610.0" mnemonicParsing="false" onAction="#onCancel" text="Cancel" />
+        <Label fx:id="generalMessage" layoutX="150.0" layoutY="650.0" prefWidth="350.0" />
+    </children>
+</AnchorPane>
