@@ -90,12 +90,8 @@
 
             <Button fx:id="manageCategoriesButton" managed="false" mnemonicParsing="false" onAction="#onManageCategories" text="Manage Categories" visible="false" />
 
-            <Button fx:id="viewSalesButton"
-                    text="View Sales"
-                    onAction="#onViewSales"
-                    visible="false"
-                    managed="false" />
+            <Button fx:id="viewSalesButton" managed="false" onAction="#onViewSales" text="View Sales" visible="false" />
         </HBox>
-
+        <Button fx:id="refreshButton" layoutX="710.0" layoutY="565.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh Event Table" />
     </children>
 </AnchorPane>
