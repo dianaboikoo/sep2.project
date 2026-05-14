@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="460.0" prefWidth="400.0"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="View.DigitalTicketView">
+    <children>
+
+        <!-- Title -->
+        <Label layoutX="30.0" layoutY="20.0"
+               text="Your Ticket"
+               style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+        <!-- Event name -->
+        <Label fx:id="eventNameLabel"
+               layoutX="30.0" layoutY="58.0"
+               prefWidth="340.0" wrapText="true"
+               style="-fx-font-size: 15px; -fx-font-weight: bold;" />
+
+        <!-- Date & Time -->
+        <Label layoutX="30.0"  layoutY="100.0" text="Date &amp; Time:" />
+        <Label fx:id="dateTimeLabel"
+               layoutX="145.0" layoutY="100.0" prefWidth="225.0" />
+
+        <!-- Venue -->
+        <Label layoutX="30.0"  layoutY="128.0" text="Venue:" />
+        <Label fx:id="venueLabel"
+               layoutX="145.0" layoutY="128.0" prefWidth="225.0" wrapText="true" />
+
+        <!-- Address -->
+        <Label layoutX="30.0"  layoutY="156.0" text="Address:" />
+        <Label fx:id="addressLabel"
+               layoutX="145.0" layoutY="156.0" prefWidth="225.0" wrapText="true" />
+
+        <!-- Separator -->
+        <Separator layoutX="30.0" layoutY="192.0" prefWidth="340.0" />
+
+        <!-- Ticket ID (entry code) -->
+        <Label layoutX="30.0" layoutY="207.0"
+               text="Ticket ID:"
+               style="-fx-font-weight: bold;" />
+        <Label fx:id="ticketIdLabel"
+               layoutX="30.0" layoutY="225.0"
+               prefWidth="340.0" wrapText="true"
+               style="-fx-font-family: 'Monospace'; -fx-font-weight: bold; -fx-font-size: 11px;" />
+
+        <!-- Separator -->
+        <Separator layoutX="30.0" layoutY="265.0" prefWidth="340.0" />
+
+        <!-- Holder -->
+        <Label layoutX="30.0"  layoutY="280.0" text="Holder:" />
+        <Label fx:id="holderLabel"
+               layoutX="145.0" layoutY="280.0" prefWidth="225.0" />
+
+        <!-- Quantity -->
+        <Label layoutX="30.0"  layoutY="308.0" text="Quantity:" />
+        <Label fx:id="quantityLabel"
+               layoutX="145.0" layoutY="308.0" />
+
+        <!-- Purchase Date -->
+        <Label layoutX="30.0"  layoutY="336.0" text="Purchased:" />
+        <Label fx:id="purchaseDateLabel"
+               layoutX="145.0" layoutY="336.0" prefWidth="225.0" />
+
+        <!-- Total Price -->
+        <Label layoutX="30.0"  layoutY="364.0" text="Total Price:" />
+        <Label fx:id="totalPriceLabel"
+               layoutX="145.0" layoutY="364.0"
+               style="-fx-font-weight: bold;" />
+
+        <!-- Close button -->
+        <Button layoutX="175.0" layoutY="415.0"
+                text="Close"
+                mnemonicParsing="false"
+                onAction="#onClose" />
+
+    </children>
+</AnchorPane>

@@ -30,7 +30,7 @@ public class TicketRepositoryImpl implements TicketRepository
     {
         return DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
-                "postgres", "1234db");
+                "postgres", "252006");
     }
 
     @Override
@@ -61,7 +61,7 @@ public class TicketRepositoryImpl implements TicketRepository
         {
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM tickets " +
-                            "WHERE user_email = ? AND status = 'ACTIVE' " +
+                            "WHERE user_email = ? " +
                             "ORDER BY purchase_date DESC;");
             statement.setString(1, email);
             ResultSet rs = statement.executeQuery();
