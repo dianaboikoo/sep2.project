@@ -192,7 +192,7 @@ public class EventRepositoryImpl implements EventRepository
                         "COALESCE(e.category_name, 'Uncategorized') as category_name, " +
                         "COALESCE(ci.name, '') as city_name " +
                         "FROM events e " +
-                        "JOIN category c ON e.category_name = c.name " +
+                        "LEFT JOIN category c ON e.category_name = c.name " +
                         "LEFT JOIN city ci ON e.zip_code = ci.zip_code " +
                         "WHERE e.status = 'PUBLISHED' AND e.date_time > NOW()");
 

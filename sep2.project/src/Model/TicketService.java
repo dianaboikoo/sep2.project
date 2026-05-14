@@ -2,6 +2,7 @@ package Model;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,7 +57,32 @@ public class TicketService
 
     public List<Ticket> getTicketsByUser(String email) throws SQLException
     {
-        return ticketRepository.findByUserEmail(email);
+        List<Ticket> raw = ticketRepository.findByUserEmail(email);
+        List<Ticket> result = new ArrayList<>();
+        for (Ticket ticket : raw)
+        {
+            result.add(resolveExpiry(ticket));
+        }
+        return result;
+    }
+
+    /**
+     * Returns the ticket unchanged unless it is ACTIVE and its event has already
+     * passed, in which case a copy with status EXPIRED is returned.
+     * No database write is performed — expiry is computed on load only.
+     */
+    private Ticket resolveExpiry(Ticket ticket) throws SQLException
+    {
+        if (ticket.getStatus() != TicketStatus.ACTIVE)
+        {
+            return ticket;
+        }
+        EventDetailDto event = eventRepository.findPublishedById(ticket.getEventId());
+        if (event != null && LocalDateTime.now().isAfter(event.getDateTime()))
+        {
+            return ticket.withStatus(TicketStatus.EXPIRED);
+        }
+        return ticket;
     }
 
     public TicketSalesDto getSalesReport(int eventId) throws SQLException
