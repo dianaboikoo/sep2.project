@@ -1,17 +1,20 @@
 package ViewModel;
 
-import Model.EventDetailDto;
-import Model.EventRepository;
-import Model.EventStatus;
-import Model.Event;
+import Client.ServerConnection;
 import Model.Category;
-import Model.CategoryService;
+import Model.EventDetailDto;
+import Shared.GsonFactory;
+import Shared.Request;
+import Shared.Response;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.lang.reflect.Type;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EditEventViewModel
 {
@@ -19,24 +22,30 @@ public class EditEventViewModel
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
   private CreateEventForm form;
-  private EventRepository repository;
   private EventValidator validator;
   private List<FieldError> lastErrors;
-  private CategoryService categoryService;
   private int currentEventId;
 
-  public EditEventViewModel(EventRepository repository, CategoryService categoryService)
+  public EditEventViewModel()
   {
-    this.repository = repository;
-    this.categoryService = categoryService;
+    // No dependencies — communicates via ServerConnection
     this.form = new CreateEventForm();
     this.validator = new EventValidator();
     this.lastErrors = new ArrayList<>();
   }
 
-  public EventDetailDto loadEvent(int eventId) throws SQLException
+  public EventDetailDto loadEvent(int eventId) throws Exception
   {
-    EventDetailDto event = repository.findPublishedById(eventId);
+    Response response = ServerConnection.getInstance()
+        .send(new Request("GET_EVENT_BY_ID", Map.of("eventId", eventId)));
+
+    if (!response.isOk())
+    {
+      throw new RuntimeException(response.getMessage());
+    }
+
+    Gson gson = GsonFactory.get();
+    EventDetailDto event = gson.fromJson(gson.toJson(response.getData()), EventDetailDto.class);
     if (event == null)
     {
       throw new IllegalArgumentException("Event not found: " + eventId);
@@ -96,29 +105,33 @@ public class EditEventViewModel
       }
     }
 
-    Event event = new Event(
-        currentEventId,
-        form.getName().trim(),
-        form.getDescription().trim(),
-        LocalDateTime.parse(form.getDateTime().trim(), DATE_TIME_FORMAT),
-        form.getVenue().trim(),
-        form.getAddress().trim(),
-        form.getCategoryName().trim(),
-        Double.parseDouble(form.getTicketPrice().trim()),
-        Integer.parseInt(form.getTotalTickets().trim()),
-        0,
-        form.getImageURL() != null && !form.getImageURL().trim().isEmpty()
-            ? form.getImageURL().trim() : null,
-        EventStatus.PUBLISHED,
-        zipCode
-    );
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("eventId",      currentEventId);
+    payload.put("name",         form.getName().trim());
+    payload.put("description",  form.getDescription().trim());
+    payload.put("dateTime",     form.getDateTime().trim());
+    payload.put("venue",        form.getVenue().trim());
+    payload.put("address",      form.getAddress().trim());
+    payload.put("categoryName", form.getCategoryName().trim());
+    payload.put("ticketPrice",  Double.parseDouble(form.getTicketPrice().trim()));
+    payload.put("totalTickets", Integer.parseInt(form.getTotalTickets().trim()));
+    payload.put("imageURL",
+            form.getImageURL() != null && !form.getImageURL().trim().isEmpty()
+                    ? form.getImageURL().trim() : null);
+    payload.put("zipCode", zipCode);
 
     try
     {
-      repository.update(event);
+      Response response = ServerConnection.getInstance()
+          .send(new Request("UPDATE_EVENT", payload));
+      if (!response.isOk())
+      {
+        lastErrors.add(new FieldError("_general", response.getMessage()));
+        return false;
+      }
       return true;
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
       lastErrors.add(new FieldError("_general",
           "Could not update event: " + e.getMessage()));
@@ -130,10 +143,16 @@ public class EditEventViewModel
   {
     try
     {
-      return categoryService.findAll();
+      Response response = ServerConnection.getInstance()
+          .send(new Request("GET_CATEGORIES", Map.of()));
+      if (!response.isOk()) return new ArrayList<>();
+      Gson gson = GsonFactory.get();
+      Type listType = new TypeToken<List<Category>>(){}.getType();
+      return gson.fromJson(gson.toJson(response.getData()), listType);
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
+      e.printStackTrace();
       return new ArrayList<>();
     }
   }

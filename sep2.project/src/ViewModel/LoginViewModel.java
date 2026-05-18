@@ -1,20 +1,25 @@
 package ViewModel;
 
-import Model.UserRepository;
+import Client.ServerConnection;
 import Model.UserRole;
+import Shared.GsonFactory;
+import Shared.Request;
+import Shared.Response;
+import com.google.gson.Gson;
 
-import java.sql.SQLException;
+import java.util.Map;
 
 public class LoginViewModel
 {
-    private final UserRepository userRepository;
-
-    public LoginViewModel(UserRepository userRepository)
+    public LoginViewModel()
     {
-        this.userRepository = userRepository;
+        // No dependencies — communicates via ServerConnection
     }
 
-    // Returns the matched role, or null if credentials are wrong
+    /**
+     * Sends a LOGIN request to the server.
+     * Returns the matched UserRole, or null if credentials are wrong or an error occurs.
+     */
     public UserRole login(String email, String password)
     {
         if (email == null || email.trim().isEmpty() ||
@@ -25,9 +30,25 @@ public class LoginViewModel
 
         try
         {
-            return userRepository.findByCredentials(email.trim(), password.trim());
+            Response response = ServerConnection.getInstance().send(
+                    new Request("LOGIN", Map.of(
+                            "email",    email.trim(),
+                            "password", password.trim())));
+
+            if (!response.isOk())
+            {
+                return null;
+            }
+
+            // data is { "role": "ADMIN" } or { "role": "USER" }
+            Gson gson = GsonFactory.get();
+            @SuppressWarnings("unchecked")
+            Map<String, String> data = gson.fromJson(
+                    gson.toJson(response.getData()), Map.class);
+            String roleStr = data.get("role");
+            return UserRole.valueOf(roleStr);
         }
-        catch (SQLException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return null;

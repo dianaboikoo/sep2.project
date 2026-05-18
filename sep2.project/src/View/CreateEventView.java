@@ -1,7 +1,6 @@
 package View;
 
 import Model.Category;
-import Model.CategoryService;
 import ViewModel.CategoryManagementViewModel;
 import ViewModel.CreateEventViewModel;
 import ViewModel.FieldError;
@@ -52,12 +51,10 @@ public class CreateEventView
   @FXML private Label generalMessage;
 
   private CreateEventViewModel viewModel;
-  private CategoryService categoryService;   // needed to launch the manage-categories window
 
-  public void init(CreateEventViewModel viewModel, CategoryService categoryService)
+  public void init(CreateEventViewModel viewModel)
   {
     this.viewModel = viewModel;
-    this.categoryService = categoryService;
     populateCategoryDropdown();
   }
 
@@ -122,8 +119,7 @@ public class CreateEventView
       Scene scene = new Scene(loader.load());
 
       CategoryManagementView mgmtView = loader.getController();
-      CategoryManagementViewModel mgmtVM =
-          new CategoryManagementViewModel(categoryService);
+      CategoryManagementViewModel mgmtVM = new CategoryManagementViewModel();
       mgmtView.init(mgmtVM);
 
       Stage stage = new Stage();

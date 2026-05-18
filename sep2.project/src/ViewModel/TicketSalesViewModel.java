@@ -1,26 +1,35 @@
 package ViewModel;
 
+import Client.ServerConnection;
 import Model.TicketSalesDto;
-import Model.TicketService;
+import Shared.GsonFactory;
+import Shared.Request;
+import Shared.Response;
+import com.google.gson.Gson;
 
-import java.sql.SQLException;
+import java.util.Map;
 
 public class TicketSalesViewModel
 {
-  private TicketService ticketService;
-
-  public TicketSalesViewModel(TicketService ticketService)
+  public TicketSalesViewModel()
   {
-    this.ticketService = ticketService;
+    // No dependencies — communicates via ServerConnection
   }
 
   public TicketSalesDto getSalesReport(int eventId)
   {
     try
     {
-      return ticketService.getSalesReport(eventId);
+      Response response = ServerConnection.getInstance()
+          .send(new Request("GET_SALES_REPORT", Map.of("eventId", eventId)));
+      if (!response.isOk())
+      {
+        return null;
+      }
+      Gson gson = GsonFactory.get();
+      return gson.fromJson(gson.toJson(response.getData()), TicketSalesDto.class);
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
       e.printStackTrace();
       return null;

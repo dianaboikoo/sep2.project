@@ -1,7 +1,6 @@
 package View;
 
 import Model.EventDetailDto;
-import Model.TicketService;
 import ViewModel.EventDetailViewModel;
 import ViewModel.PurchaseTicketViewModel;
 import javafx.fxml.FXML;
@@ -32,14 +31,11 @@ public class EventDetailView
         DateTimeFormatter.ofPattern("dd MMM yyyy  HH:mm");
 
     private String userEmail;
-    private TicketService ticketService;
     private EventDetailDto currentEvent;
 
-    public void init(EventDetailViewModel viewModel, int eventId,
-                     String userEmail, TicketService ticketService)
+    public void init(EventDetailViewModel viewModel, int eventId, String userEmail)
     {
         this.userEmail = userEmail;
-        this.ticketService = ticketService;
 
         EventDetailDto event = viewModel.getEvent(eventId);
         this.currentEvent = event;
@@ -93,8 +89,7 @@ public class EventDetailView
             Scene scene = new Scene(loader.load());
 
             PurchaseTicketView purchaseView = loader.getController();
-            PurchaseTicketViewModel purchaseVM =
-                    new PurchaseTicketViewModel(ticketService);
+            PurchaseTicketViewModel purchaseVM = new PurchaseTicketViewModel();
             purchaseView.init(purchaseVM, currentEvent, userEmail);
 
             Stage stage = new Stage();

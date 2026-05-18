@@ -1,26 +1,35 @@
 package ViewModel;
 
+import Client.ServerConnection;
 import Model.EventDetailDto;
-import Model.EventService;
+import Shared.GsonFactory;
+import Shared.Request;
+import Shared.Response;
+import com.google.gson.Gson;
 
-import java.sql.SQLException;
+import java.util.Map;
 
 public class EventDetailViewModel
 {
-    private final EventService eventService;
-
-    public EventDetailViewModel(EventService eventService)
+    public EventDetailViewModel()
     {
-        this.eventService = eventService;
+        // No dependencies — communicates via ServerConnection
     }
 
     public EventDetailDto getEvent(int id)
     {
         try
         {
-            return eventService.getEventById(id);
+            Response response = ServerConnection.getInstance()
+                    .send(new Request("GET_EVENT_BY_ID", Map.of("eventId", id)));
+            if (!response.isOk())
+            {
+                return null;
+            }
+            Gson gson = GsonFactory.get();
+            return gson.fromJson(gson.toJson(response.getData()), EventDetailDto.class);
         }
-        catch (SQLException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return null;

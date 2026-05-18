@@ -3,13 +3,8 @@ package View;
 import ViewModel.*;
 import javafx.scene.control.Alert;
 import Model.Category;
-import Model.CategoryRepositoryImpl;
-import Model.CategoryService;
 import Model.City;
 import Model.EventListDto;
-import Model.EventRepositoryImpl;
-import Model.EventService;
-import Model.TicketService;
 import Model.UserRole;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -58,17 +53,14 @@ public class EventsListView
 
   private EventsListViewModel viewModel;
   private String userEmail;
-  private TicketService ticketService;
 
   private static final DateTimeFormatter FORMATTER =
       DateTimeFormatter.ofPattern("dd MMM yyyy  HH:mm");
 
-  public void init(EventsListViewModel viewModel, UserRole role,
-                   String userEmail, TicketService ticketService)
+  public void init(EventsListViewModel viewModel, UserRole role, String userEmail)
   {
     this.viewModel = viewModel;
     this.userEmail = userEmail;
-    this.ticketService = ticketService;
     setupColumns();
     setupFilterDropdowns();
     loadEvents();   // initial load (no filter)
@@ -218,9 +210,8 @@ public class EventsListView
       Scene scene = new Scene(loader.load());
 
       EventDetailView detailView = loader.getController();
-      EventService eventService = new EventService(EventRepositoryImpl.getInstance());
-      EventDetailViewModel detailVM = new EventDetailViewModel(eventService);
-      detailView.init(detailVM, selected.getEventId(), userEmail, ticketService);
+      EventDetailViewModel detailVM = new EventDetailViewModel();
+      detailView.init(detailVM, selected.getEventId(), userEmail);
 
       Stage stage = new Stage();
       stage.setTitle("Event Details");
@@ -242,13 +233,9 @@ public class EventsListView
           getClass().getResource("/View/CreateEventView.fxml"));
       Scene scene = new Scene(loader.load());
 
-      CategoryRepositoryImpl catRepo = CategoryRepositoryImpl.getInstance();
-      CategoryService categoryService = new CategoryService(catRepo);
-      CreateEventViewModel createVM = new CreateEventViewModel(
-          EventRepositoryImpl.getInstance(), categoryService);
-
+      CreateEventViewModel createVM = new CreateEventViewModel();
       CreateEventView createView = loader.getController();
-      createView.init(createVM, categoryService);
+      createView.init(createVM);
 
       Stage stage = new Stage();
       stage.setTitle("Create Event");
@@ -270,9 +257,7 @@ public class EventsListView
           getClass().getResource("/View/MyTicketsView.fxml"));
       Scene scene = new Scene(loader.load());
 
-      EventService eventService = new EventService(EventRepositoryImpl.getInstance());
-      MyTicketsViewModel ticketsVM = new MyTicketsViewModel(ticketService, eventService);
-
+      MyTicketsViewModel ticketsVM = new MyTicketsViewModel();
       MyTicketsView ticketsView = loader.getController();
       ticketsView.init(ticketsVM, userEmail);
 
@@ -296,10 +281,7 @@ public class EventsListView
           getClass().getResource("/View/CategoryManagementView.fxml"));
       Scene scene = new Scene(loader.load());
 
-      CategoryRepositoryImpl catRepo = CategoryRepositoryImpl.getInstance();
-      CategoryService categoryService = new CategoryService(catRepo);
-      CategoryManagementViewModel catVM = new CategoryManagementViewModel(categoryService);
-
+      CategoryManagementViewModel catVM = new CategoryManagementViewModel();
       CategoryManagementView catView = loader.getController();
       catView.init(catVM);
 
@@ -336,7 +318,7 @@ public class EventsListView
       Scene scene = new Scene(loader.load());
 
       TicketSalesView salesView = loader.getController();
-      TicketSalesViewModel salesVM = new TicketSalesViewModel(ticketService);
+      TicketSalesViewModel salesVM = new TicketSalesViewModel();
       salesView.init(salesVM, selected.getEventId());
 
       Stage stage = new Stage();
@@ -371,10 +353,7 @@ public class EventsListView
           getClass().getResource("/View/EditEventView.fxml"));
       Scene scene = new Scene(loader.load());
 
-      CategoryRepositoryImpl catRepo = CategoryRepositoryImpl.getInstance();
-      CategoryService categoryService = new CategoryService(catRepo);
-      EditEventViewModel editVM = new EditEventViewModel(
-          EventRepositoryImpl.getInstance(), categoryService);
+      EditEventViewModel editVM = new EditEventViewModel();
 
       EditEventView editView = loader.getController();
       editView.init(editVM, selected.getEventId());

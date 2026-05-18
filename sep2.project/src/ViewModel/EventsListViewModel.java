@@ -1,57 +1,93 @@
 package ViewModel;
 
+import Client.ServerConnection;
 import Model.Category;
-import Model.CategoryService;
 import Model.City;
 import Model.EventListDto;
-import Model.EventService;
+import Shared.GsonFactory;
+import Shared.Request;
+import Shared.Response;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import java.sql.SQLException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EventsListViewModel
 {
-  private final EventService eventService;
-  private final CategoryService categoryService;
+  private static final DateTimeFormatter DATE_FMT =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   private List<FieldError> lastErrors = new ArrayList<>();
 
-  public EventsListViewModel(EventService eventService, CategoryService categoryService)
+  public EventsListViewModel()
   {
-    this.eventService = eventService;
-    this.categoryService = categoryService;
+    // No dependencies — communicates via ServerConnection
   }
 
   public List<EventListDto> getPublishedEvents()
   {
-    return getFilteredEvents(null, null, null, null);
+    try
+    {
+      Response response = ServerConnection.getInstance()
+          .send(new Request("GET_ALL_EVENTS", Map.of()));
+      if (!response.isOk())
+      {
+        lastErrors.add(new FieldError("_general", response.getMessage()));
+        return Collections.emptyList();
+      }
+      Gson gson = GsonFactory.get();
+      Type listType = new TypeToken<List<EventListDto>>(){}.getType();
+      return gson.fromJson(gson.toJson(response.getData()), listType);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      lastErrors.add(new FieldError("_general", "Could not load events: " + e.getMessage()));
+      return Collections.emptyList();
+    }
   }
 
   /**
-   * Raw filter (no validation). Used internally after the view has validated inputs.
-   * Returns an empty list on DB error.
+   * Raw filter — dates may be null for open-ended ranges.
    */
   public List<EventListDto> getFilteredEvents(String category, Integer zipCode,
       LocalDate from, LocalDate to)
   {
     try
     {
-      // Treat blank strings as "no filter" (null)
       String safeCategory = (category == null || category.trim().isEmpty()) ? null : category;
-      return eventService.getFilteredEvents(safeCategory, zipCode, from, to);
+
+      Map<String, Object> payload = new HashMap<>();
+      payload.put("category", safeCategory);
+      payload.put("zipCode",  zipCode);
+      payload.put("fromDate", from  == null ? null : from.format(DATE_FMT));
+      payload.put("toDate",   to    == null ? null : to.format(DATE_FMT));
+
+      Response response = ServerConnection.getInstance()
+          .send(new Request("GET_FILTERED_EVENTS", payload));
+      if (!response.isOk())
+      {
+        lastErrors.add(new FieldError("_general", response.getMessage()));
+        return Collections.emptyList();
+      }
+      Gson gson = GsonFactory.get();
+      Type listType = new TypeToken<List<EventListDto>>(){}.getType();
+      return gson.fromJson(gson.toJson(response.getData()), listType);
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
       e.printStackTrace();
-      lastErrors.add(new FieldError("_general",
-          "Could not load events: " + e.getMessage()));
+      lastErrors.add(new FieldError("_general", "Could not filter events: " + e.getMessage()));
       return Collections.emptyList();
     }
   }
-
 
   public boolean validateFilters(LocalDate fromDate, LocalDate toDate)
   {
@@ -76,7 +112,6 @@ public class EventsListViewModel
     return lastErrors.isEmpty();
   }
 
-
   public List<EventListDto> applyFilters(String category, Integer zipCode,
       LocalDate fromDate, LocalDate toDate)
   {
@@ -91,9 +126,14 @@ public class EventsListViewModel
   {
     try
     {
-      return categoryService.findAll();
+      Response response = ServerConnection.getInstance()
+          .send(new Request("GET_CATEGORIES", Map.of()));
+      if (!response.isOk()) return Collections.emptyList();
+      Gson gson = GsonFactory.get();
+      Type listType = new TypeToken<List<Category>>(){}.getType();
+      return gson.fromJson(gson.toJson(response.getData()), listType);
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
       e.printStackTrace();
       return Collections.emptyList();
@@ -104,15 +144,19 @@ public class EventsListViewModel
   {
     try
     {
-      return eventService.getAllCities();
+      Response response = ServerConnection.getInstance()
+          .send(new Request("GET_CITIES", Map.of()));
+      if (!response.isOk()) return Collections.emptyList();
+      Gson gson = GsonFactory.get();
+      Type listType = new TypeToken<List<City>>(){}.getType();
+      return gson.fromJson(gson.toJson(response.getData()), listType);
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
       e.printStackTrace();
       return Collections.emptyList();
     }
   }
-
 
   public List<FieldError> getLastErrors() { return lastErrors; }
 }

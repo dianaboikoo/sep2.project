@@ -1,7 +1,6 @@
 package View;
 
-import Model.*;
-import ViewModel.CreateEventViewModel;
+import Model.UserRole;
 import ViewModel.EventsListViewModel;
 import ViewModel.LoginViewModel;
 import javafx.fxml.FXML;
@@ -41,7 +40,7 @@ public class LoginView
             return;
         }
 
-        this.loggedInEmail = email.trim();   // store it
+        this.loggedInEmail = email.trim();
 
         try
         {
@@ -58,23 +57,16 @@ public class LoginView
 
     private void openMainWindow(UserRole role) throws Exception
     {
-        EventRepositoryImpl    eventRepo    = EventRepositoryImpl.getInstance();
-        CategoryRepositoryImpl catRepo      = CategoryRepositoryImpl.getInstance();
-        TicketRepositoryImpl   ticketRepo   = TicketRepositoryImpl.getInstance();
-
-        CategoryService categoryService = new CategoryService(catRepo);
-        EventService    eventService    = new EventService(eventRepo);
-        TicketService ticketService   = new TicketService(ticketRepo, eventRepo);
-
-        EventsListViewModel eventsVM = new EventsListViewModel(
-                eventService, categoryService);
+        // All data now comes from the server via ServerConnection —
+        // no direct repository or service instantiation needed here.
+        EventsListViewModel eventsVM = new EventsListViewModel();
 
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/View/EventsListView.fxml"));
         Scene scene = new Scene(loader.load());
 
         EventsListView eventsView = loader.getController();
-        eventsView.init(eventsVM, role, loggedInEmail, ticketService);
+        eventsView.init(eventsVM, role, loggedInEmail);
 
         Stage stage = new Stage();
         stage.setTitle(role == UserRole.ADMIN ? "Events — Admin" : "Events");

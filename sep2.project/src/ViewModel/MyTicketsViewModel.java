@@ -1,32 +1,38 @@
 package ViewModel;
 
+import Client.ServerConnection;
 import Model.EventDetailDto;
-import Model.EventService;
 import Model.Ticket;
-import Model.TicketService;
+import Shared.GsonFactory;
+import Shared.Request;
+import Shared.Response;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import java.sql.SQLException;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class MyTicketsViewModel
 {
-    private final TicketService ticketService;
-    private final EventService eventService;
-
-    public MyTicketsViewModel(TicketService ticketService, EventService eventService)
+    public MyTicketsViewModel()
     {
-        this.ticketService = ticketService;
-        this.eventService = eventService;
+        // No dependencies — communicates via ServerConnection
     }
 
     public List<Ticket> getMyTickets(String email)
     {
         try
         {
-            return ticketService.getTicketsByUser(email);
+            Response response = ServerConnection.getInstance()
+                    .send(new Request("GET_MY_TICKETS", Map.of("userEmail", email)));
+            if (!response.isOk()) return Collections.emptyList();
+            Gson gson = GsonFactory.get();
+            Type listType = new TypeToken<List<Ticket>>(){}.getType();
+            return gson.fromJson(gson.toJson(response.getData()), listType);
         }
-        catch (SQLException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return Collections.emptyList();
@@ -37,29 +43,26 @@ public class MyTicketsViewModel
     {
         try
         {
-            return eventService.getEventById(eventId);
+            Response response = ServerConnection.getInstance()
+                    .send(new Request("GET_EVENT_BY_ID", Map.of("eventId", eventId)));
+            if (!response.isOk()) return null;
+            Gson gson = GsonFactory.get();
+            return gson.fromJson(gson.toJson(response.getData()), EventDetailDto.class);
         }
-        catch (SQLException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return null;
         }
     }
 
-    // Helper used by MyTicketsView to render the Event Name column.
-    // ViewModel still "depends on TicketService" per spec; EventService is only
-    // used to resolve the eventId → event name lookup, since Ticket carries the id only.
+    /**
+     * Helper used by MyTicketsView to render the Event Name column.
+     * Sends GET_EVENT_BY_ID and returns just the name string.
+     */
     public String getEventName(int eventId)
     {
-        try
-        {
-            EventDetailDto event = eventService.getEventById(eventId);
-            return event == null ? "(unknown event)" : event.getName();
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            return "(error)";
-        }
+        EventDetailDto event = getEventById(eventId);
+        return event == null ? "(unknown event)" : event.getName();
     }
 }

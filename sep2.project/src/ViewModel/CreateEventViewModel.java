@@ -1,34 +1,28 @@
 package ViewModel;
 
-import Model.Event;
-import Model.EventRepository;
-import Model.EventStatus;
+import Client.ServerConnection;
 import Model.Category;
-import Model.CategoryService;
+import Shared.GsonFactory;
+import Shared.Request;
+import Shared.Response;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CreateEventViewModel
 {
-    private static final DateTimeFormatter DATE_TIME_FORMAT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     private CreateEventForm form;
-    private EventRepository repository;
     private EventValidator validator;
     private List<FieldError> lastErrors;
 
-    private CategoryService categoryService;
-
-    public CreateEventViewModel(EventRepository repository, CategoryService categoryService)
+    public CreateEventViewModel()
     {
-
-        this.repository = repository;
-        this.categoryService = categoryService;
+        // No dependencies — communicates via ServerConnection
         this.form = new CreateEventForm();
         this.validator = new EventValidator();
         this.lastErrors = new ArrayList<>();
@@ -75,31 +69,36 @@ public class CreateEventViewModel
             }
         }
 
-        // Validation passed, safe to parse and build the Event
-        Event event = new Event(
-                0, // new event, no ID yet
-                form.getName().trim(),
-                form.getDescription().trim(),
-                LocalDateTime.parse(form.getDateTime().trim(), DATE_TIME_FORMAT),
-                form.getVenue().trim(),
-                form.getAddress().trim(),
-                form.getCategoryName().trim(),
-                Double.parseDouble(form.getTicketPrice().trim()),
-                Integer.parseInt(form.getTotalTickets().trim()),
-                0, // ticketsSold = 0 for new event
-                form.getImageURL().trim().isEmpty() ? null : form.getImageURL().trim(),
-                EventStatus.PUBLISHED,
-                zipCode
-        );
+        // Build payload and send to server
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("name",         form.getName().trim());
+        payload.put("description",  form.getDescription().trim());
+        payload.put("dateTime",     form.getDateTime().trim());
+        payload.put("venue",        form.getVenue().trim());
+        payload.put("address",      form.getAddress().trim());
+        payload.put("categoryName", form.getCategoryName().trim());
+        payload.put("ticketPrice",  Double.parseDouble(form.getTicketPrice().trim()));
+        payload.put("totalTickets", Integer.parseInt(form.getTotalTickets().trim()));
+        payload.put("imageURL",
+                form.getImageURL() != null && !form.getImageURL().trim().isEmpty()
+                        ? form.getImageURL().trim() : null);
+        payload.put("zipCode", zipCode);
+        payload.put("status", "PUBLISHED");
 
         try
         {
-            repository.save(event);
-            // reset form for next entry
+            Response response = ServerConnection.getInstance()
+                    .send(new Request("CREATE_EVENT", payload));
+            if (!response.isOk())
+            {
+                lastErrors.add(new FieldError("_general", response.getMessage()));
+                return false;
+            }
+            // Reset form for next entry
             this.form = new CreateEventForm();
             return true;
         }
-        catch (SQLException e)
+        catch (Exception e)
         {
             lastErrors.add(new FieldError("_general",
                     "Could not save event: " + e.getMessage()));
@@ -111,10 +110,16 @@ public class CreateEventViewModel
     {
         try
         {
-            return categoryService.findAll();
+            Response response = ServerConnection.getInstance()
+                    .send(new Request("GET_CATEGORIES", Map.of()));
+            if (!response.isOk()) return new ArrayList<>();
+            Gson gson = GsonFactory.get();
+            Type listType = new TypeToken<List<Category>>(){}.getType();
+            return gson.fromJson(gson.toJson(response.getData()), listType);
         }
-        catch (java.sql.SQLException e)
+        catch (Exception e)
         {
+            e.printStackTrace();
             return new ArrayList<>();
         }
     }
