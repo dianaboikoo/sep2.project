@@ -107,10 +107,32 @@ public class EventRepositoryImpl implements EventRepository
   {
     try (Connection connection = getConnection())
     {
-      PreparedStatement statement = connection.prepareStatement(
-          "DELETE FROM events WHERE event_id = ?");
-      statement.setInt(1, id);
-      statement.executeUpdate();
+      connection.setAutoCommit(false);
+      try
+      {
+        // Delete related tickets first to satisfy the FK constraint
+        PreparedStatement deleteTickets = connection.prepareStatement(
+            "DELETE FROM tickets WHERE event_id = ?");
+        deleteTickets.setInt(1, id);
+        deleteTickets.executeUpdate();
+
+        // Now delete the event itself
+        PreparedStatement deleteEvent = connection.prepareStatement(
+            "DELETE FROM events WHERE event_id = ?");
+        deleteEvent.setInt(1, id);
+        deleteEvent.executeUpdate();
+
+        connection.commit();
+      }
+      catch (SQLException e)
+      {
+        connection.rollback();
+        throw e;
+      }
+      finally
+      {
+        connection.setAutoCommit(true);
+      }
     }
   }
 

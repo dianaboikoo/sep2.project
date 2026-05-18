@@ -158,5 +158,31 @@ public class EventsListViewModel
     }
   }
 
+  /**
+   * Sends DELETE_EVENT to the server and deletes the event from the database.
+   * Returns true on success, false if the server returned an error.
+   * The error message is available via getLastErrors() on failure.
+   */
+  public boolean deleteEvent(int eventId)
+  {
+    try
+    {
+      Response response = ServerConnection.getInstance()
+          .send(new Request("DELETE_EVENT", Map.of("eventId", eventId)));
+      if (!response.isOk())
+      {
+        lastErrors.add(new FieldError("_general", response.getMessage()));
+        return false;
+      }
+      return true;
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      lastErrors.add(new FieldError("_general", "Could not delete event: " + e.getMessage()));
+      return false;
+    }
+  }
+
   public List<FieldError> getLastErrors() { return lastErrors; }
 }

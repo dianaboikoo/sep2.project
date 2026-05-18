@@ -96,6 +96,8 @@
                     visible="false"
                     managed="false" />
             <Button fx:id="editEventButton" managed="false" mnemonicParsing="false" onAction="#onEditEvent" text="Edit Event" visible="false" />
+
+            <Button fx:id="deleteEventButton" managed="false" mnemonicParsing="false" onAction="#onDeleteEvent" text="Delete Event" visible="false" style="-fx-text-fill: white; -fx-background-color: #c0392b;" />
         </HBox>
         <Button fx:id="refreshButton" layoutX="710.0" layoutY="565.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh Event Table" />
     </children>

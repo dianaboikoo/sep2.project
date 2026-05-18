@@ -38,6 +38,7 @@ public class EventsListView
   @FXML private Button createEventButton;
   @FXML private Button manageCategoriesButton;
   @FXML private Button editEventButton;
+  @FXML private Button deleteEventButton;
   @FXML private Button refreshButton;
 
   // ---- Filter UI controls ----
@@ -74,6 +75,8 @@ public class EventsListView
     viewSalesButton.setManaged(isAdmin);
     editEventButton.setVisible(isAdmin);
     editEventButton.setManaged(isAdmin);
+    deleteEventButton.setVisible(isAdmin);
+    deleteEventButton.setManaged(isAdmin);
   }
 
   private void setupColumns()
@@ -369,6 +372,47 @@ public class EventsListView
     {
       e.printStackTrace();
     }
+  }
+
+  @FXML
+  private void onDeleteEvent()
+  {
+    EventListDto selected = eventsTable.getSelectionModel().getSelectedItem();
+
+    if (selected == null)
+    {
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setTitle("No event selected");
+      alert.setHeaderText(null);
+      alert.setContentText("Please select an event to delete.");
+      alert.showAndWait();
+      return;
+    }
+
+    // Confirmation dialog before deleting
+    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+    confirm.setTitle("Delete Event");
+    confirm.setHeaderText("Delete \"" + selected.getName() + "\"?");
+    confirm.setContentText("This will permanently delete the event and all associated data from the database. This cannot be undone.");
+    confirm.showAndWait().ifPresent(result ->
+    {
+      if (result == javafx.scene.control.ButtonType.OK)
+      {
+        boolean success = viewModel.deleteEvent(selected.getEventId());
+        if (success)
+        {
+          loadEvents();
+        }
+        else
+        {
+          Alert error = new Alert(Alert.AlertType.ERROR);
+          error.setTitle("Delete failed");
+          error.setHeaderText(null);
+          error.setContentText("Could not delete the event. Please try again.");
+          error.showAndWait();
+        }
+      }
+    });
   }
 
   @FXML
