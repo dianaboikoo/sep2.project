@@ -14,7 +14,7 @@ public class Main extends Application
   @Override
   public void start(Stage primaryStage) throws Exception
   {
-    // Fail fast — connect to the server before showing any UI.
+    // Fail fast - connect to the server before showing any UI.
     // If the server is not running the user gets a clear error immediately.
     try
     {

@@ -24,14 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Handles all communication with a single connected client.
- * Runs on its own thread (spawned by Server.java).
- *
- * Protocol: one JSON object per line (request in, response out).
- * Each request is routed to a dedicated private handler method.
- * Any exception is caught and returned as Response.error(...).
- */
 public class ClientHandler implements Runnable
 {
     private static final DateTimeFormatter DATE_TIME_FMT =
@@ -49,10 +41,6 @@ public class ClientHandler implements Runnable
         this.manager = manager;
         this.gson    = GsonFactory.get();
     }
-
-    // =========================================================================
-    // Main loop
-    // =========================================================================
 
     @Override
     public void run()
@@ -91,10 +79,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    // =========================================================================
-    // Router
-    // =========================================================================
-
     private Response route(Request request)
     {
         Map<String, Object> p = request.getPayload();
@@ -120,11 +104,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    // =========================================================================
-    // Handlers — one per request type
-    // =========================================================================
-
-    /** LOGIN: { email, password } → { role: "ADMIN" | "USER" } */
     private Response handleLogin(Map<String, Object> p)
     {
         try
@@ -144,7 +123,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** GET_ALL_EVENTS: {} → List<EventListDto> */
     private Response handleGetAllEvents()
     {
         try
@@ -158,7 +136,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** GET_FILTERED_EVENTS: { category?, zipCode?, fromDate?, toDate? } → List<EventListDto> */
     private Response handleGetFilteredEvents(Map<String, Object> p)
     {
         try
@@ -178,7 +155,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** GET_EVENT_BY_ID: { eventId } → EventDetailDto */
     private Response handleGetEventById(Map<String, Object> p)
     {
         try
@@ -197,15 +173,22 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /**
-     * CREATE_EVENT: { name, description, dateTime, venue, address, categoryName,
-     *                 ticketPrice, totalTickets, imageURL, zipCode?, status } → Event
-     */
     private Response handleCreateEvent(Map<String, Object> p)
     {
         try
         {
             Event event = buildEventFromPayload(0, p);
+
+            // Duplicate check: same name + date/time + venue already exists
+            boolean duplicate = manager.getEventRepo()
+                    .existsByNameDateTimeVenue(event.getName(), event.getDateTime(),
+                            event.getVenue());
+            if (duplicate)
+            {
+                return Response.error(
+                        "FIELD:name:An event with this name, date and venue already exists");
+            }
+
             Event saved = manager.getEventRepo().save(event);
             return Response.ok(saved);
         }
@@ -215,10 +198,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /**
-     * UPDATE_EVENT: { eventId, name, description, dateTime, venue, address, categoryName,
-     *                 ticketPrice, totalTickets, imageURL, zipCode? } → Event
-     */
     private Response handleUpdateEvent(Map<String, Object> p)
     {
         try
@@ -234,7 +213,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** DELETE_EVENT: { eventId } → null */
     private Response handleDeleteEvent(Map<String, Object> p)
     {
         try
@@ -249,7 +227,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** GET_CATEGORIES: {} → List<Category> */
     private Response handleGetCategories()
     {
         try
@@ -263,7 +240,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** ADD_CATEGORY: { name, description } → Category */
     private Response handleAddCategory(Map<String, Object> p)
     {
         try
@@ -287,7 +263,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** EDIT_CATEGORY: { currentName, newName, description } → Category */
     private Response handleEditCategory(Map<String, Object> p)
     {
         try
@@ -313,7 +288,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** DELETE_CATEGORY: { name } → null */
     private Response handleDeleteCategory(Map<String, Object> p)
     {
         try
@@ -332,7 +306,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** GET_CITIES: {} → List<City> */
     private Response handleGetCities()
     {
         try
@@ -346,7 +319,7 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** PURCHASE_TICKET: { eventId, userEmail, quantity } → Ticket */
+    // synchronized so two threads can't buy tickets at the same time
     private synchronized Response handlePurchaseTicket(Map<String, Object> p)
     {
         try
@@ -357,7 +330,6 @@ public class ClientHandler implements Runnable
 
             List<Ticket> tickets = manager.getTicketService()
                     .purchaseTicket(eventId, userEmail, quantity);
-            // Return the first (and only) ticket
             return Response.ok(tickets.get(0));
         }
         catch (IllegalArgumentException | IllegalStateException e)
@@ -370,7 +342,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** GET_MY_TICKETS: { userEmail } → List<Ticket> */
     private Response handleGetMyTickets(Map<String, Object> p)
     {
         try
@@ -386,7 +357,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    /** GET_SALES_REPORT: { eventId } → TicketSalesDto */
     private Response handleGetSalesReport(Map<String, Object> p)
     {
         try
@@ -405,11 +375,6 @@ public class ClientHandler implements Runnable
         }
     }
 
-    // =========================================================================
-    // Helpers
-    // =========================================================================
-
-    /** Build an Event from CREATE_EVENT or UPDATE_EVENT payload. */
     private Event buildEventFromPayload(int eventId, Map<String, Object> p)
     {
         String name         = str(p, "name");
@@ -423,7 +388,6 @@ public class ClientHandler implements Runnable
         String imageURL     = strOrNull(p, "imageURL");
         Integer zipCode     = intOrNull(p, "zipCode");
 
-        // Parse status if provided, default to PUBLISHED
         EventStatus status = EventStatus.PUBLISHED;
         String statusStr = strOrNull(p, "status");
         if (statusStr != null && !statusStr.isEmpty())
@@ -444,14 +408,12 @@ public class ClientHandler implements Runnable
                 categoryName,
                 ticketPrice,
                 totalTickets,
-                0,           // ticketsSold = 0 (will be ignored by UPDATE query anyway)
+                0,           // ignored by UPDATE, only matters on INSERT
                 imageURL,
                 status,
                 zipCode
         );
     }
-
-    // ---- Payload extraction helpers ----
 
     private String str(Map<String, Object> p, String key)
     {
@@ -477,7 +439,7 @@ public class ClientHandler implements Runnable
     {
         Object v = p.get(key);
         if (v == null) throw new IllegalArgumentException("Missing field: " + key);
-        // Gson deserializes numbers as Double when the type is Object
+        // Gson maps JSON numbers to Double when the target type is Object
         if (v instanceof Double) return ((Double) v).intValue();
         if (v instanceof Number) return ((Number) v).intValue();
         return Integer.parseInt(v.toString());

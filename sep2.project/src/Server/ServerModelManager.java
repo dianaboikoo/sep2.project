@@ -8,12 +8,6 @@ import Model.TicketRepositoryImpl;
 import Model.TicketService;
 import Model.UserRepositoryImpl;
 
-/**
- * Singleton that owns all repository and service instances on the server.
- * Initialized once when the server starts. All ClientHandler threads share
- * the same instances — services are stateless, and the DB provides the
- * true source of concurrency control.
- */
 public class ServerModelManager
 {
     private static ServerModelManager instance;
@@ -56,12 +50,8 @@ public class ServerModelManager
         return instance;
     }
 
-    // ---- Repository accessors (used when services don't expose a method) ----
-
     public EventRepositoryImpl getEventRepo()       { return eventRepo; }
     public UserRepositoryImpl  getUserRepo()         { return userRepo; }
-
-    // ---- Service accessors ----
 
     public EventService    getEventService()    { return eventService; }
     public CategoryService getCategoryService() { return categoryService; }

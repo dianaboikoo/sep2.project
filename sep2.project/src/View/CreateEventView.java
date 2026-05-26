@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 public class CreateEventView
 {
-  // Input fields
+
   @FXML private TextField nameField;
   @FXML private TextArea descriptionField;
   @FXML private TextField dateField;
@@ -35,7 +35,7 @@ public class CreateEventView
   @FXML private TextField totalTicketsField;
   @FXML private TextField imageURLField;
 
-  // Error labels
+
   @FXML private Label nameError;
   @FXML private Label descriptionError;
   @FXML private Label dateTimeError;
@@ -47,7 +47,7 @@ public class CreateEventView
   @FXML private Label totalTicketsError;
   @FXML private Label imageURLError;
 
-  // General message (success / DB errors)
+
   @FXML private Label generalMessage;
 
   private CreateEventViewModel viewModel;
@@ -105,10 +105,7 @@ public class CreateEventView
     }
   }
 
-  /**
-   * Open the Manage Categories window as a modal dialog.
-   * When it closes, refresh the dropdown so any new categories appear.
-   */
+
   @FXML
   private void onManageCategories()
   {
@@ -130,7 +127,7 @@ public class CreateEventView
       stage.initOwner(categoryComboBox.getScene().getWindow());
       stage.showAndWait();
 
-      // refresh dropdown — any new/edited/deleted categories now reflected
+      // refresh dropdown - any new/edited/deleted categories now reflected
       populateCategoryDropdown();
     }
     catch (Exception e)

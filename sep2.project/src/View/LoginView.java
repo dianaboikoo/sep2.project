@@ -57,8 +57,7 @@ public class LoginView
 
     private void openMainWindow(UserRole role) throws Exception
     {
-        // All data now comes from the server via ServerConnection —
-        // no direct repository or service instantiation needed here.
+
         EventsListViewModel eventsVM = new EventsListViewModel();
 
         FXMLLoader loader = new FXMLLoader(

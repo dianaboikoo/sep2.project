@@ -2,10 +2,6 @@ package Shared;
 
 import java.util.Map;
 
-/**
- * Represents a request sent from the client to the server over TCP.
- * Serialized as a single JSON line.
- */
 public class Request
 {
     private String type;

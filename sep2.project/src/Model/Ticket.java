@@ -29,7 +29,7 @@ public class Ticket
     public int getQuantity() { return quantity; }
     public TicketStatus getStatus() { return status; }
 
-    /** Returns a copy of this ticket with the given status, leaving all other fields unchanged. */
+    // returns a copy of this ticket with the given status, leaving all other fields unchanged
     public Ticket withStatus(TicketStatus newStatus)
     {
         return new Ticket(ticketId, eventId, userEmail, purchaseDate, quantity, newStatus);

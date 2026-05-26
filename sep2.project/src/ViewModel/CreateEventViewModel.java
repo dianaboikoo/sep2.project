@@ -22,7 +22,6 @@ public class CreateEventViewModel
 
     public CreateEventViewModel()
     {
-        // No dependencies — communicates via ServerConnection
         this.form = new CreateEventForm();
         this.validator = new EventValidator();
         this.lastErrors = new ArrayList<>();
@@ -56,7 +55,6 @@ public class CreateEventViewModel
             return false;
         }
 
-        // Parse optional zip code
         Integer zipCode = null;
         String rawZip = form.getZipCode() == null ? "" : form.getZipCode().trim();
         if (!rawZip.isEmpty())
@@ -69,7 +67,6 @@ public class CreateEventViewModel
             }
         }
 
-        // Build payload and send to server
         Map<String, Object> payload = new HashMap<>();
         payload.put("name",         form.getName().trim());
         payload.put("description",  form.getDescription().trim());
@@ -94,7 +91,6 @@ public class CreateEventViewModel
                 lastErrors.add(new FieldError("_general", response.getMessage()));
                 return false;
             }
-            // Reset form for next entry
             this.form = new CreateEventForm();
             return true;
         }

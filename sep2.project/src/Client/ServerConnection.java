@@ -10,15 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-/**
- * Singleton TCP client that manages the persistent connection to the server.
- *
- * Usage:
- *   ServerConnection.getInstance().send(new Request("LOGIN", Map.of(...)));
- *
- * All communication is JSON over a single persistent TCP socket (port 8080).
- * The send() method is synchronized to prevent concurrent writes on the same socket.
- */
 public class ServerConnection
 {
     private static final String HOST = "localhost";
@@ -34,15 +25,11 @@ public class ServerConnection
     private ServerConnection() throws Exception
     {
         this.socket = new Socket(HOST, PORT);
-        this.out    = new PrintWriter(socket.getOutputStream(), true); // auto-flush
+        this.out    = new PrintWriter(socket.getOutputStream(), true);
         this.in     = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.gson   = GsonFactory.get();
     }
 
-    /**
-     * Returns the singleton ServerConnection, creating it on the first call.
-     * Throws an exception if the server cannot be reached.
-     */
     public static synchronized ServerConnection getInstance() throws Exception
     {
         if (instance == null)
@@ -52,15 +39,12 @@ public class ServerConnection
         return instance;
     }
 
-    /**
-     * Sends a request to the server and returns the response.
-     * Synchronized to prevent interleaving of concurrent requests on the same socket.
-     */
+    // synchronized so multiple ViewModels don't write to the socket at the same time
     public synchronized Response send(Request request) throws Exception
     {
         String json = gson.toJson(request);
-        out.println(json);           // write JSON line (auto-flushed)
-        String responseLine = in.readLine();   // read response line
+        out.println(json);
+        String responseLine = in.readLine();
         if (responseLine == null)
         {
             throw new RuntimeException("Server closed the connection unexpectedly");
@@ -68,9 +52,6 @@ public class ServerConnection
         return gson.fromJson(responseLine, Response.class);
     }
 
-    /**
-     * Closes the underlying socket. Call on application shutdown.
-     */
     public void close()
     {
         try

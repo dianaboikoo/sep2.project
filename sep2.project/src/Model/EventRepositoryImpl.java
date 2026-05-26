@@ -8,7 +8,6 @@ import java.sql.DriverManager;
 
 public class EventRepositoryImpl implements EventRepository
 {
-  //using singleton = driver is only registered once and same repository obj is reused throughout the apps lifetime
   private static EventRepositoryImpl instance;
 
   private EventRepositoryImpl() throws SQLException
@@ -16,7 +15,6 @@ public class EventRepositoryImpl implements EventRepository
     DriverManager.registerDriver(new org.postgresql.Driver());
   }
 
-  //constructor is private so getInstance is the only way to enter the class
   public static synchronized EventRepositoryImpl getInstance() throws SQLException
   {
     if (instance == null)
@@ -28,12 +26,10 @@ public class EventRepositoryImpl implements EventRepository
 
   private Connection getConnection() throws SQLException
   {
-    //each of us has different passowrd, so when running it you need to change to your personal Postgres pasword
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=events",
         "postgres", "252006");
   }
 
-  //CRUD method = Create, Read, Update, Delete
   @Override
   public Event save(Event event) throws SQLException
   {
@@ -72,10 +68,7 @@ public class EventRepositoryImpl implements EventRepository
       PreparedStatement statement = connection.prepareStatement(
           "SELECT * FROM events WHERE event_id = ?");
       statement.setInt(1, id);
-      //resultSet = what comes back from database after execution (like results)
-      //executeQuery = what sends the SQL to database and runs it (when we expect data back)
       ResultSet resultSet = statement.executeQuery();
-      //looking for one specific event by ID = only one result + return
       if (resultSet.next())
       {
         return createEvent(resultSet);
@@ -93,7 +86,6 @@ public class EventRepositoryImpl implements EventRepository
           "SELECT * FROM events");
       ResultSet resultSet = statement.executeQuery();
       ArrayList<Event> result = new ArrayList<>();
-      //while = fetching every event in database = keep looping + add each to list + return whole list
       while (resultSet.next())
       {
         result.add(createEvent(resultSet));
@@ -110,13 +102,12 @@ public class EventRepositoryImpl implements EventRepository
       connection.setAutoCommit(false);
       try
       {
-        // Delete related tickets first to satisfy the FK constraint
+        // tickets reference the event via FK, so they have to go first
         PreparedStatement deleteTickets = connection.prepareStatement(
             "DELETE FROM tickets WHERE event_id = ?");
         deleteTickets.setInt(1, id);
         deleteTickets.executeUpdate();
 
-        // Now delete the event itself
         PreparedStatement deleteEvent = connection.prepareStatement(
             "DELETE FROM events WHERE event_id = ?");
         deleteEvent.setInt(1, id);
@@ -149,8 +140,24 @@ public class EventRepositoryImpl implements EventRepository
     }
   }
 
-  //helping to convert database raw data results to java Event obj
-  //thanks to this we are manually mapping each result column into right field
+  @Override
+  public boolean existsByNameDateTimeVenue(String name, java.time.LocalDateTime dateTime,
+      String venue) throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement(
+          "SELECT 1 FROM events WHERE LOWER(name) = LOWER(?) " +
+          "AND date_time = ? " +
+          "AND LOWER(venue) = LOWER(?)");
+      statement.setString(1, name);
+      statement.setTimestamp(2, java.sql.Timestamp.valueOf(dateTime));
+      statement.setString(3, venue);
+      ResultSet rs = statement.executeQuery();
+      return rs.next();
+    }
+  }
+
   private Event createEvent(ResultSet resultSet) throws SQLException
   {
     return new Event(
@@ -165,7 +172,7 @@ public class EventRepositoryImpl implements EventRepository
         resultSet.getInt("total_tickets"),
         resultSet.getInt("tickets_sold"),
         resultSet.getString("imageurl"),
-        EventStatus.valueOf(resultSet.getString("status")) //converts string "DRAFT" stored in dbs to Java value as enum
+        EventStatus.valueOf(resultSet.getString("status"))
     );
   }
 
@@ -356,9 +363,7 @@ public class EventRepositoryImpl implements EventRepository
         }
     }
 
-    //no ticket sold = admin shouldn't be able to manipulate sold ticket counts
-    //status = keeping it PUBLISHED as set when created
-    //created_at = never changes after creation
+    // tickets_sold, status, and created_at are intentionally excluded from the update
     public Event update(Event event) throws SQLException
     {
       try (Connection connection = getConnection())

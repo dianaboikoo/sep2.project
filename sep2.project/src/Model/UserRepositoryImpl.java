@@ -30,7 +30,6 @@ public class UserRepositoryImpl implements UserRepository
     @Override
     public UserRole findByCredentials(String email, String password) throws SQLException
     {
-        // Check admin table first
         try (Connection connection = getConnection())
         {
             PreparedStatement stmt = connection.prepareStatement(
@@ -43,7 +42,6 @@ public class UserRepositoryImpl implements UserRepository
             }
         }
 
-        // Check users table
         try (Connection connection = getConnection())
         {
             PreparedStatement stmt = connection.prepareStatement(
@@ -56,6 +54,6 @@ public class UserRepositoryImpl implements UserRepository
             }
         }
 
-        return null; // no match
+        return null;
     }
 }

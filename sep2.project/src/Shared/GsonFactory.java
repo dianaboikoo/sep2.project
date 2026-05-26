@@ -10,13 +10,6 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Shared Gson factory used by both the client (ServerConnection) and
- * the server (ClientHandler) to ensure identical serialization/deserialization.
- *
- * Registers a LocalDateTime type adapter that uses ISO_LOCAL_DATE_TIME format,
- * so LocalDateTime fields in domain objects are correctly round-tripped over JSON.
- */
 public class GsonFactory
 {
     private static final Gson INSTANCE = buildGson();
@@ -32,12 +25,11 @@ public class GsonFactory
     {
         GsonBuilder builder = new GsonBuilder();
 
-        // Serialize LocalDateTime → ISO string (e.g. "2025-06-01T14:30:00")
+        // Gson doesn't handle LocalDateTime natively, so we register adapters for it
         builder.registerTypeAdapter(LocalDateTime.class,
                 (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context) ->
                         new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
 
-        // Deserialize ISO string → LocalDateTime
         builder.registerTypeAdapter(LocalDateTime.class,
                 (JsonDeserializer<LocalDateTime>) (json, typeOfT, context) ->
                         LocalDateTime.parse(json.getAsString(),

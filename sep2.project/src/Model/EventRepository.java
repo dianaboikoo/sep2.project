@@ -17,4 +17,5 @@ public interface EventRepository
   List<City> findAllCities() throws SQLException;
   boolean updateTicketsSold(int eventId, int quantity) throws SQLException;
   Event update(Event event) throws SQLException;
+  boolean existsByNameDateTimeVenue(String name, java.time.LocalDateTime dateTime, String venue) throws SQLException;
 }

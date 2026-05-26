@@ -41,7 +41,7 @@ public class CategoryService
     String trimmedNewName = newName.trim();
     String safeNewDescription = newDescription == null ? "" : newDescription.trim();
 
-    // Duplicate check — only if the name is actually changing (case-insensitive comparison)
+    // Duplicate check - only if the name is actually changing (case-insensitive comparison)
     // This excludes the current category from the duplicate check, allowing user to save with same name
     if (!trimmedNewName.equalsIgnoreCase(currentName.trim())
         && repository.existsByName(trimmedNewName))
@@ -95,13 +95,7 @@ public class CategoryService
     return repository.findByName(name.trim());
   }
 
-  /**
-   * Validates a category name against business rules:
-   * 1. Not null / not empty
-   * 2. No leading or trailing whitespace
-   * 3. Max 100 characters
-   * Throws IllegalArgumentException with the appropriate spec error message.
-   */
+
   private void validateName(String name)
   {
     if (name == null || name.isEmpty())
@@ -109,7 +103,6 @@ public class CategoryService
       throw new IllegalArgumentException("Name is required");
     }
     // Reject leading or trailing whitespace BEFORE trimming
-    // (this is what the spec means by "no leading/trailing whitespace")
     if (!name.equals(name.trim()))
     {
       throw new IllegalArgumentException("Name cannot have leading or trailing whitespace");

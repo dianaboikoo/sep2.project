@@ -21,7 +21,6 @@ public class TicketService
     public List<Ticket> purchaseTicket(int eventId, String userEmail,
                                        int quantity) throws SQLException
     {
-        // Validate quantity
         if (quantity <= 0)
         {
             throw new IllegalArgumentException("Quantity must be at least 1");
@@ -31,8 +30,7 @@ public class TicketService
             throw new IllegalArgumentException("Cannot purchase more than 10 tickets at once");
         }
 
-        // Atomically check availability and increment tickets_sold
-        // If this returns false, the event is sold out or quantity exceeds availability
+        // atomic: only increments if enough tickets are left
         boolean success = eventRepository.updateTicketsSold(eventId, quantity);
         if (!success)
         {
@@ -40,7 +38,6 @@ public class TicketService
                     "Not enough tickets available for this event");
         }
 
-        // Generate a unique ticket ID and create the ticket
         String ticketId = UUID.randomUUID().toString();
         Ticket ticket = new Ticket(
                 ticketId,
@@ -66,11 +63,7 @@ public class TicketService
         return result;
     }
 
-    /**
-     * Returns the ticket unchanged unless it is ACTIVE and its event has already
-     * passed, in which case a copy with status EXPIRED is returned.
-     * No database write is performed — expiry is computed on load only.
-     */
+    // expiry is computed on load, no point writing it back to the DB
     private Ticket resolveExpiry(Ticket ticket) throws SQLException
     {
         if (ticket.getStatus() != TicketStatus.ACTIVE)
@@ -87,17 +80,14 @@ public class TicketService
 
     public TicketSalesDto getSalesReport(int eventId) throws SQLException
     {
-        // Get event details for name, totalTickets, ticketPrice
         EventDetailDto event = eventRepository.findPublishedById(eventId);
         if (event == null)
         {
             throw new IllegalStateException("Event not found: " + eventId);
         }
 
-        // Get all tickets for this event
         List<Ticket> tickets = ticketRepository.findByEventId(eventId);
 
-        // Calculate totals
         int ticketsSold = tickets.stream()
                 .mapToInt(Ticket::getQuantity)
                 .sum();

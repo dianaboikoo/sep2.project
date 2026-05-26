@@ -8,14 +8,13 @@ import java.util.List;
 
 public class EventValidator
 {
-    // length limits
     private static final int NAME_MAX = 200;
     private static final int DESCRIPTION_MAX = 2000;
     private static final int VENUE_MAX = 200;
     private static final int ADDRESS_MAX = 200;
     private static final int IMAGE_URL_MAX = 500;
 
-    // expected format: "yyyy-MM-dd HH:mm"  combined by the View before reaching the form
+    // the View combines date + time pickers into this format before setting the field
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -174,7 +173,6 @@ public class EventValidator
 
     private void validateImageURL(String imageURL, List<FieldError> errors)
     {
-        // imageURL is OPTIONAL — empty/null is valid
         if (imageURL == null || imageURL.trim().isEmpty())
         {
             return;

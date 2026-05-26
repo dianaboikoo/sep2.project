@@ -21,25 +21,25 @@ public class CategoryManagementView
 {
   private static final int NAME_MAX = 100;
 
-  // ---- Add New Category form fields ----
+
   @FXML private TextField nameField;
   @FXML private TextArea descriptionField;
   @FXML private Label nameError;
   @FXML private Label descriptionError;
   @FXML private Button addButton;
 
-  // ---- Existing Categories table ----
+
   @FXML private TableView<Category> categoryTable;
   @FXML private TableColumn<Category, String> nameColumn;
   @FXML private TableColumn<Category, String> descriptionColumn;
   @FXML private TableColumn<Category, Void> actionsColumn;
 
-  // ---- Status / toast area ----
+
   @FXML private Label statusMessage;
 
   private CategoryManagementViewModel viewModel;
 
-  /** Wired from Main after FXML is loaded. */
+
   public void init(CategoryManagementViewModel viewModel)
   {
     this.viewModel = viewModel;
@@ -48,9 +48,7 @@ public class CategoryManagementView
     refreshTable();
   }
 
-  // =====================================================
-  // Add form: live validation
-  // =====================================================
+
   private void setupAddFormValidation()
   {
     // Disable Add button when name is empty (or only whitespace).
@@ -74,9 +72,7 @@ public class CategoryManagementView
     addButton.setDisable(text == null || text.trim().isEmpty());
   }
 
-  // =====================================================
-  // Table setup
-  // =====================================================
+
   private void setupTableColumns()
   {
     nameColumn.setCellValueFactory(cellData ->
@@ -85,7 +81,7 @@ public class CategoryManagementView
     descriptionColumn.setCellValueFactory(cellData ->
         new SimpleStringProperty(cellData.getValue().getDescription()));
 
-    // "Actions" column with Edit + Delete buttons per row
+
     actionsColumn.setCellFactory(col -> new TableCell<Category, Void>()
     {
       private final Button editButton = new Button("Edit");
@@ -131,9 +127,7 @@ public class CategoryManagementView
     categoryTable.setItems(FXCollections.observableArrayList(list));
   }
 
-  // =====================================================
-  // Add
-  // =====================================================
+
   @FXML
   private void onAddCategory()
   {
@@ -154,7 +148,7 @@ public class CategoryManagementView
       return;
     }
 
-    // ---- Send to backend (service layer) ----
+
     setBusy(true);
     boolean ok = viewModel.addCategory(name, desc);
     setBusy(false);
@@ -171,9 +165,7 @@ public class CategoryManagementView
     }
   }
 
-  // =====================================================
-  // Edit (modal dialog with pre-filled fields)
-  // =====================================================
+
   private void onEditCategory(Category category)
   {
     Dialog<Category> dialog = new Dialog<>();
@@ -199,14 +191,14 @@ public class CategoryManagementView
     // Get the Save button so we can control its enabled state
     final Button saveButton = (Button) dialog.getDialogPane().lookupButton(saveButtonType);
 
-    // ---- Disable Save while name is empty ----
+
     nameInput.textProperty().addListener((obs, oldVal, newVal) ->
     {
       saveButton.setDisable(newVal == null || newVal.trim().isEmpty());
       errorLabel.setText("");
     });
 
-    // ---- Intercept Save to validate without closing on error ----
+
     saveButton.addEventFilter(javafx.event.ActionEvent.ACTION, ev ->
     {
       errorLabel.setText("");
@@ -251,9 +243,9 @@ public class CategoryManagementView
     dialog.showAndWait();
   }
 
-  // =====================================================
-  // Delete (confirmation dialog)
-  // =====================================================
+
+  // Delete
+
   private void onDeleteCategory(Category category)
   {
     Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -286,9 +278,9 @@ public class CategoryManagementView
     }
   }
 
-  // =====================================================
+
   // Helpers
-  // =====================================================
+
   private void showFieldErrors(List<FieldError> errors)
   {
     for (FieldError error : errors)
@@ -317,7 +309,7 @@ public class CategoryManagementView
     updateAddButtonState();
   }
 
-  /** Shows a transient toast-style message (auto-clears after 3s). */
+
   private void showToast(String text, Color color)
   {
     statusMessage.setTextFill(color);
@@ -334,7 +326,7 @@ public class CategoryManagementView
     fade.play();
   }
 
-  /** Disable all action buttons while a request is "in-flight". */
+
   private void setBusy(boolean busy)
   {
     // when not busy, restore based on whether the field has text

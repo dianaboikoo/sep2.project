@@ -29,7 +29,6 @@ public class EventService
     return eventRepository.findPublishedById(id);
   }
 
-  /** Used to populate the City dropdown in filter UI. */
   public List<City> getAllCities() throws SQLException
   {
     return eventRepository.findAllCities();

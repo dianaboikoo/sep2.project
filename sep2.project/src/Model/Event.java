@@ -16,7 +16,7 @@ public class Event
   private EventStatus status;
   private String imageURL;
   private String categoryName;
-  private Integer zipCode; // nullable — city is optional
+  private Integer zipCode;
 
   public Event(int eventId, String name, String description,
       LocalDateTime dateTime, String venue, String address, String categoryName,

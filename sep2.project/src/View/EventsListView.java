@@ -41,7 +41,7 @@ public class EventsListView
   @FXML private Button deleteEventButton;
   @FXML private Button refreshButton;
 
-  // ---- Filter UI controls ----
+
   @FXML private ComboBox<Category> categoryFilter;
   @FXML private ComboBox<City>     cityFilter;
   @FXML private DatePicker         fromDatePicker;
@@ -49,7 +49,7 @@ public class EventsListView
   @FXML private Button             applyFiltersButton;
   @FXML private Button             clearFiltersButton;
 
-  // ---- Single shared filter error label (per spec) ----
+
   @FXML private Label filterError;
 
   private EventsListViewModel viewModel;
@@ -95,7 +95,7 @@ public class EventsListView
 
   private void setupFilterDropdowns()
   {
-    // ---- Category dropdown ----
+
     List<Category> categories = viewModel.getCategoryOptions();
     categoryFilter.setItems(FXCollections.observableArrayList(categories));
     categoryFilter.setConverter(new StringConverter<>()
@@ -104,7 +104,7 @@ public class EventsListView
       @Override public Category fromString(String s) { return null; }
     });
 
-    // ---- City dropdown ----
+
     List<City> cities = viewModel.getCityOptions();
     cityFilter.setItems(FXCollections.observableArrayList(cities));
     cityFilter.setConverter(new StringConverter<>()
@@ -114,9 +114,7 @@ public class EventsListView
     });
   }
 
-  // =====================================================
-  // Loading events
-  // =====================================================
+
   private void loadEvents()
   {
     List<EventListDto> events = viewModel.getPublishedEvents();
@@ -138,9 +136,7 @@ public class EventsListView
     }
   }
 
-  // =====================================================
-  // Filter actions
-  // =====================================================
+
   @FXML
   private void onApplyFilters()
   {
@@ -152,7 +148,7 @@ public class EventsListView
     LocalDate fromDate        = fromDatePicker.getValue();
     LocalDate toDate          = toDatePicker.getValue();
 
-    // ---- Frontend validation per spec ----
+
     // If fromDate AND toDate are both set, fromDate must be <= toDate.
     // If only one is set, no validation needed (open-ended range is allowed).
     if (fromDate != null && toDate != null && fromDate.isAfter(toDate))
@@ -164,9 +160,9 @@ public class EventsListView
     String categoryName = selectedCategory == null ? null : selectedCategory.getName();
     Integer zipCode     = selectedCity == null ? null : selectedCity.getCityId();
 
-    // fromDate set, toDate null  → filter from that date onwards (no upper bound)
-    // fromDate null, toDate set  → filter up to that date (no lower bound)
-    // both null                  → no date filter
+    // fromDate set, toDate null  then filter from that date onwards (no upper bound)
+    // fromDate null, toDate set  then filter up to that date (no lower bound)
+    // both null                  then no date filter
     List<EventListDto> filtered =
         viewModel.getFilteredEvents(categoryName, zipCode, fromDate, toDate);
     displayEvents(filtered);
@@ -197,9 +193,7 @@ public class EventsListView
     filterError.setManaged(false);
   }
 
-  // =====================================================
-  // Navigation (unchanged from existing code)
-  // =====================================================
+
   @FXML
   private void onViewDetails()
   {

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class EditEventView
 {
-  // Input fields
+
   @FXML private TextField nameField;
   @FXML private TextArea descriptionField;
   @FXML private TextField dateField;
@@ -31,7 +31,7 @@ public class EditEventView
   @FXML private TextField totalTicketsField;
   @FXML private TextField imageURLField;
 
-  // Error labels
+
   @FXML private Label nameError;
   @FXML private Label descriptionError;
   @FXML private Label dateTimeError;
@@ -43,7 +43,7 @@ public class EditEventView
   @FXML private Label totalTicketsError;
   @FXML private Label imageURLError;
 
-  // General message (success / DB errors)
+
   @FXML private Label generalMessage;
 
   private EditEventViewModel viewModel;
